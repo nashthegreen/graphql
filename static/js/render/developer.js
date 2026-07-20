@@ -20,7 +20,8 @@ const RANKS = [
 function levelToRank(level) {
   const value = Number(level) || 0;
   if (value <= 0) return "—";
-  return RANKS[value] || RANKS[RANKS.length - 1];
+  if (value >= RANKS.length) return RANKS[RANKS.length - 1];
+  return RANKS[value] || "—";
 }
 
 export function renderDeveloperInfo(data, els) {

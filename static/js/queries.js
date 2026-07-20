@@ -73,11 +73,18 @@ export const PROFILE_QUERY = `
       }
     }
     latestLevel: transaction(
-      where: { type: { _eq: "level" } }
-      order_by: { createdAt: desc }
+      where: {
+        type: { _eq: "level" }
+        _and: [
+          { path: { _like: $xpPath } }
+          { path: { _nilike: $xpExclude } }
+        ]
+      }
+      order_by: { amount: desc }
       limit: 1
     ) {
       amount
+      path
     }
     skills: transaction(
       distinct_on: type
