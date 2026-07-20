@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GraphQL Profile</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <section id="loading-view" class="view">
+      <div class="loading-spinner" aria-label="Loading" role="status"></div>
+    </section>
+
+    <section id="login-view" class="view hidden">
+      <div class="card auth-card">
+        <h1>Sign in</h1>
+        <p class="subtitle">Access your school profile data</p>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-identifier">Username or Email</label>
+            <input
+              type="text"
+              id="login-identifier"
+              name="identifier"
+              required
+              autocomplete="username"
+            />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input
+              type="password"
+              id="login-password"
+              name="password"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+          <p class="error" id="login-error"></p>
+          <button type="submit" class="btn btn-primary" id="login-submit-btn">
+            Login
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <section id="profile-view" class="view hidden">
+      <div class="profile-shell">
+        <header class="profile-header">
+          <div>
+            <h1 id="profile-title">My Profile</h1>
+            <p class="profile-subtitle" id="profile-login"></p>
+          </div>
+          <button type="button" id="logout-btn" class="btn btn-secondary">
+            Logout
+          </button>
+        </header>
+
+        <p class="error hidden" id="profile-error"></p>
+
+        <nav class="profile-tabs" aria-label="Profile sections">
+          <button type="button" class="tab-btn active" data-tab="developer">
+            Developer Info
+          </button>
+          <button type="button" class="tab-btn" data-tab="statistics">
+            Statistics
+          </button>
+          <button type="button" class="tab-btn" data-tab="projects">
+            Projects &amp; Skills
+          </button>
+        </nav>
+
+        <section class="tab-panel" data-tab-panel="developer">
+          <div class="info-grid">
+            <article class="info-card">
+              <h2>Full name</h2>
+              <p class="info-value" id="dev-name">—</p>
+            </article>
+            <article class="info-card">
+              <h2>Login</h2>
+              <p class="info-value" id="dev-login">—</p>
+            </article>
+            <article class="info-card">
+              <h2>Email</h2>
+              <p class="info-value info-value-sm" id="dev-email">—</p>
+            </article>
+            <article class="info-card">
+              <h2>User ID</h2>
+              <p class="info-value" id="dev-user-id">—</p>
+            </article>
+            <article class="info-card">
+              <h2>Total XP</h2>
+              <p class="info-value" id="dev-total-xp">—</p>
+            </article>
+            <article class="info-card">
+              <h2>Level</h2>
+              <p class="info-value" id="dev-level">—</p>
+            </article>
+            <article class="info-card">
+              <h2>Rank</h2>
+              <p class="info-value info-value-sm" id="dev-rank">—</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel hidden" data-tab-panel="statistics">
+          <div class="info-grid">
+            <article class="info-card">
+              <h2>Total XP</h2>
+              <p class="info-value" id="stat-total-xp">—</p>
+            </article>
+            <article class="info-card">
+              <h2>Progress done</h2>
+              <p class="info-value" id="stat-progress-done">—</p>
+            </article>
+            <article class="info-card">
+              <h2>Audit ratio</h2>
+              <p class="info-value" id="stat-audit-ratio">—</p>
+            </article>
+          </div>
+
+          <div class="charts-grid">
+            <article class="chart-card">
+              <h3>Cumulative XP over time</h3>
+              <svg
+                id="xp-line-chart"
+                class="chart-svg"
+                role="img"
+                aria-label="Line chart of cumulative XP over time"
+              ></svg>
+            </article>
+            <article class="chart-card">
+              <h3>Audit ratio</h3>
+              <svg
+                id="audit-pie-chart"
+                class="chart-svg"
+                role="img"
+                aria-label="Pie chart of audit up versus down votes"
+              ></svg>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-panel hidden" data-tab-panel="projects">
+          <article class="chart-card chart-card-wide">
+            <h3>Skills radar</h3>
+            <svg
+              id="skills-radar-chart"
+              class="chart-svg chart-svg-radar"
+              role="img"
+              aria-label="Radar chart of skill progression"
+            ></svg>
+          </article>
+        </section>
+      </div>
+    </section>
+
+    <script type="module" src="static/js/main.js"></script>
+  </body>
+</html>
