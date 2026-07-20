@@ -80,7 +80,7 @@ export const PROFILE_QUERY = `
           { path: { _nilike: $xpExclude } }
         ]
       }
-      order_by: { amount: desc }
+      order_by: { createdAt: desc }
       limit: 1
     ) {
       amount
