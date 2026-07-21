@@ -34,14 +34,14 @@ export const profileEl = {
   statAuditsUp: document.getElementById("stat-audits-up"),
   statAuditsDown: document.getElementById("stat-audits-down"),
   xpChart: document.getElementById("xp-line-chart"),
-  xpCompareBtn: document.getElementById("btn-xp-compare"),
   auditChart: document.getElementById("audit-pie-chart"),
   treemap: document.getElementById("treemap"),
   treemapTooltip: document.getElementById("tm-tooltip"),
   chartTooltip: document.getElementById("tm-tooltip"),
+  topProjectsList: document.getElementById("top-projects-list"),
 
   skillsChart: document.getElementById("skills-radar-chart"),
-  topProjectsList: document.getElementById("top-projects-list"),
+  techChart: document.getElementById("tech-radar-chart"),
   recentProjectsList: document.getElementById("recent-projects-list"),
 };
 

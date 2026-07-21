@@ -38,10 +38,10 @@ export function summarizeProjects(transactions) {
   return { top, recent, projects };
 }
 
-export function renderProjectLists(transactions, topEl, recentEl) {
+export function renderProjectLists(transactions, recentEl, topEl) {
   const { top, recent } = summarizeProjects(transactions);
 
-  renderRankedList(topEl, top.slice(0, 5), (project, index) => {
+  renderRankedList(topEl, top.slice(0, 3), (project, index) => {
     const rank = String(index + 1).padStart(2, "0");
     return `<span class="rank">${rank}</span><span class="name">${escapeHtml(project.name)}</span><span class="xp">${formatXp(project.xp)}</span>`;
   });

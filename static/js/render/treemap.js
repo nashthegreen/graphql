@@ -1,15 +1,16 @@
-import { formatXp } from "../charts/utils.js";
+import { formatXp, placeTooltip, hideTooltip } from "../charts/utils.js";
 
-const TM_COLORS = [
-  "#E3993A",
-  "#5FC9C0",
-  "#7FA8C9",
-  "#C98F5F",
-  "#D96B6B",
-  "#8FBFA0",
-  "#B7A0D6",
-  "#D9C15F",
-];
+/**
+ * Amber intensity scale: higher XP → darker / more saturated.
+ * @param {number} value
+ * @param {number} max
+ */
+function xpShade(value, max) {
+  const t = max > 0 ? Math.min(Math.max(value / max, 0), 1) : 0;
+  const lightness = 58 - t * 30;
+  const saturation = 48 + t * 32;
+  return `hsl(36 ${saturation}% ${lightness}%)`;
+}
 
 function layoutTreemap(items, x, y, w, h) {
   if (!items.length) return [];
@@ -62,39 +63,50 @@ export function renderXpTreemap(wrap, tooltip, projects) {
 
   if (!items.length) {
     wrap.innerHTML =
-      '<div class="data-list"><li class="empty" style="justify-content:center;padding:40px 0;border:none;color:var(--ink-faint);font-family:\'IBM Plex Mono\',monospace;font-size:12px;">No project XP yet</li></div>';
+      '<div class="chart-empty" role="status">No project XP yet</div>';
     return;
   }
 
   const width = wrap.clientWidth || 320;
   const height = wrap.clientHeight || 280;
   const total = items.reduce((sum, item) => sum + item.value, 0);
+  const maxXp = items[0]?.value || 1;
   const rects = layoutTreemap(items, 0, 0, width, height);
 
-  rects.forEach((rect, index) => {
+  rects.forEach((rect) => {
     const el = document.createElement("div");
     el.className = "tm-tile";
+    el.tabIndex = 0;
+    el.setAttribute("role", "img");
+    el.setAttribute(
+      "aria-label",
+      `${rect.name}: ${formatXp(rect.value)}`
+    );
     el.style.left = `${rect.x}px`;
     el.style.top = `${rect.y}px`;
     el.style.width = `${Math.max(rect.w - 1, 0)}px`;
     el.style.height = `${Math.max(rect.h - 1, 0)}px`;
-    el.style.background = TM_COLORS[index % TM_COLORS.length];
+    el.style.background = xpShade(rect.value, maxXp);
 
     if (rect.w > 55 && rect.h > 24) {
       el.innerHTML = `<span>${rect.name}</span>`;
     }
 
-    el.addEventListener("mousemove", (event) => {
-      if (!tooltip) return;
-      tooltip.style.display = "block";
-      tooltip.style.left = `${event.clientX + 14}px`;
-      tooltip.style.top = `${event.clientY + 14}px`;
-      const pct = ((rect.value / total) * 100).toFixed(1);
-      tooltip.innerHTML = `<b>${rect.name}</b><br>${formatXp(rect.value)}<br>${pct}% of project XP`;
-    });
+    const pct = ((rect.value / total) * 100).toFixed(1);
+    const tipHtml = `<b>${rect.name}</b><br>${formatXp(rect.value)}<br>${pct}% of project XP`;
 
-    el.addEventListener("mouseleave", () => {
-      if (tooltip) tooltip.style.display = "none";
+    const show = (eventOrEl) => placeTooltip(tooltip, eventOrEl, tipHtml);
+    const hide = () => hideTooltip(tooltip);
+
+    el.addEventListener("mousemove", show);
+    el.addEventListener("mouseleave", hide);
+    el.addEventListener("focus", () => show(el));
+    el.addEventListener("blur", hide);
+    el.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        show(el);
+      }
     });
 
     wrap.appendChild(el);

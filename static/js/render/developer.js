@@ -146,7 +146,7 @@ export function renderDeveloperInfo(data, els) {
   const latest = recent[0];
   const bestFriend = resolveBestFriend(data.finishedGroups, login, userId);
 
-  els.title.textContent = fullName || "Developer Profile";
+  els.title.textContent = fullName || login || "—";
   els.login.textContent = `@${login}`;
   els.devName.textContent = fullName || login || "—";
   els.devLogin.textContent = login || "—";

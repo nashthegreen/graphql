@@ -63,8 +63,9 @@
       <div class="sheet">
         <div class="titleblock">
           <div>
-            <div class="eyebrow">GRAPHQL - REBOOT 01</div>
-            <h1 id="profile-title">Developer Profile</h1>
+            <a href="./" class="eyebrow brand-link" title="Refresh">REBOOT01 &gt;&gt; GRAPHQL</a>
+            <div class="eyebrow welcome-eyebrow">Welcome to your dashboard,</div>
+            <h1 id="profile-title">—</h1>
           </div>
           <div class="meta">
             SOURCE — <b>GraphQL API</b> (JWT authenticated)<br />
@@ -81,12 +82,6 @@
           <aside class="dev-info panel">
             <div class="eyebrow">Fig. 01 — Developer Info</div>
 
-            <div class="avatar-slot" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-                <circle cx="12" cy="8" r="3.4" />
-                <path d="M4.5 20c1.4-4 4.2-6 7.5-6s6.1 2 7.5 6" />
-              </svg>
-            </div>
             <div class="dev-name" id="dev-name">—</div>
             <div class="dev-idline">
               @<span id="dev-login">—</span>
@@ -166,16 +161,6 @@
                 <div class="panel full">
                   <div class="panel-head">
                     <div class="eyebrow">Fig. 02 — XP Overtime</div>
-                    <div class="panel-actions">
-                      <button
-                        type="button"
-                        class="btn-toggle active"
-                        id="btn-xp-compare"
-                        data-mode="cohort"
-                      >
-                        Cohort
-                      </button>
-                    </div>
                   </div>
                   <div class="chart-wrap">
                     <svg
@@ -190,14 +175,14 @@
                 <div class="panel">
                   <div class="panel-head">
                     <div class="eyebrow">Fig. 03 — Audit Ratio</div>
-                    <span class="panel-hint">hover for detail</span>
+                    <span class="panel-hint">hover / focus for detail</span>
                   </div>
                   <div class="stat-pills">
-                    <div class="stat-pill">
+                    <div class="stat-pill stat-pill-up">
                       <span class="cap">Audits up</span>
                       <span class="val" id="stat-audits-up">—</span>
                     </div>
-                    <div class="stat-pill">
+                    <div class="stat-pill stat-pill-down">
                       <span class="cap">Audits down</span>
                       <span class="val" id="stat-audits-down">—</span>
                     </div>
@@ -206,16 +191,18 @@
                     id="audit-pie-chart"
                     class="chart-svg"
                     role="img"
-                    aria-label="Pie chart of audit up versus down votes"
+                    aria-label="Donut chart of audit up versus down votes with ratio in the center"
                   ></svg>
                 </div>
 
                 <div class="panel">
                   <div class="panel-head">
                     <div class="eyebrow">Fig. 04 — Project XP Treemap</div>
-                    <span class="panel-hint">hover for detail</span>
+                    <span class="panel-hint">hover / focus for detail</span>
                   </div>
                   <div class="treemap-wrap" id="treemap"></div>
+                  <div class="eyebrow list-subhead">Top 3 Projects by XP</div>
+                  <ul class="data-list data-list-compact" id="top-projects-list"></ul>
                 </div>
               </div>
             </section>
@@ -227,6 +214,7 @@
                 <div class="panel">
                   <div class="panel-head">
                     <div class="eyebrow">Fig. 05 — Skills</div>
+                    <span class="panel-hint">hover / focus for detail</span>
                   </div>
                   <svg
                     id="skills-radar-chart"
@@ -237,9 +225,15 @@
                 </div>
                 <div class="panel">
                   <div class="panel-head">
-                    <div class="eyebrow">Fig. 06 — Top Projects</div>
+                    <div class="eyebrow">Fig. 06 — Technologies</div>
+                    <span class="panel-hint">hover / focus for detail</span>
                   </div>
-                  <ul class="data-list" id="top-projects-list"></ul>
+                  <svg
+                    id="tech-radar-chart"
+                    class="chart-svg chart-svg-radar"
+                    role="img"
+                    aria-label="Radar chart of technology progression"
+                  ></svg>
                 </div>
               </div>
 
@@ -257,8 +251,7 @@
                 <b>user</b>, <b>transaction</b> (xp / level / skills),
                 <b>event_user</b> / <b>object</b> (module ranks),
                 <b>group</b> (best friend), <b>progress</b> (completed count).
-                XP overtime compares your cumulative total to cohort or all-students
-                averages. Charts rendered with SVG.
+                Charts rendered with SVG.
               </footer>
             </section>
           </main>

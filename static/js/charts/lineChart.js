@@ -3,8 +3,32 @@ import {
   formatXp,
   showEmptyChart,
   clearSvg,
+  setSvgA11y,
   palette,
 } from "./utils.js";
+
+/**
+ * Stable local calendar day key (YYYY-MM-DD).
+ * Locale date strings (e.g. 15/01/2024) are not reliably re-parsed by Date.
+ */
+function dayKey(value) {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function formatDayLabel(isoDay) {
+  const d = new Date(`${isoDay}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return isoDay;
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 /**
  * Build daily cumulative XP for one user from their transactions.
@@ -14,13 +38,12 @@ export function toCumulativeSeries(transactions) {
 
   (transactions || []).forEach((tx) => {
     if (!(tx.amount > 0) || !tx.createdAt) return;
-    const day = new Date(tx.createdAt).toLocaleDateString();
+    const day = dayKey(tx.createdAt);
+    if (!day) return;
     dailyXp[day] = (dailyXp[day] || 0) + tx.amount;
   });
 
-  const dates = Object.keys(dailyXp).sort(
-    (a, b) => new Date(a) - new Date(b)
-  );
+  const dates = Object.keys(dailyXp).sort();
 
   let running = 0;
   const values = dates.map((date) => {
@@ -31,55 +54,7 @@ export function toCumulativeSeries(transactions) {
   return { dates, values };
 }
 
-/**
- * Average cumulative XP across users, aligned to a shared date timeline.
- */
-export function averageCumulativeByDate(transactions, timelineDates) {
-  const byUser = new Map();
-
-  (transactions || []).forEach((tx) => {
-    if (!(tx.amount > 0) || !tx.createdAt) return;
-    const key = tx.userId ?? tx.user?.login;
-    if (key == null || key === "") return;
-    const list = byUser.get(key) || [];
-    list.push(tx);
-    byUser.set(key, list);
-  });
-
-  if (!byUser.size || !timelineDates?.length) {
-    return timelineDates.map(() => null);
-  }
-
-  const userSeries = [...byUser.values()].map((txs) => {
-    const { dates, values } = toCumulativeSeries(txs);
-    return dates.map((date, index) => ({
-      time: new Date(date).getTime(),
-      value: values[index],
-    }));
-  });
-
-  return timelineDates.map((date) => {
-    const t = new Date(date).getTime();
-    let sum = 0;
-    let count = 0;
-
-    userSeries.forEach((points) => {
-      let last = null;
-      for (const point of points) {
-        if (point.time <= t) last = point.value;
-        else break;
-      }
-      if (last != null) {
-        sum += last;
-        count += 1;
-      }
-    });
-
-    return count ? sum / count : null;
-  });
-}
-
-function drawSeries(svg, points, color, dashed = false) {
+function drawSeries(svg, points, color) {
   if (points.length < 2) return;
 
   svg.appendChild(
@@ -87,66 +62,24 @@ function drawSeries(svg, points, color, dashed = false) {
       points: points.map((p) => `${p.x},${p.y}`).join(" "),
       fill: "none",
       stroke: color,
-      "stroke-width": dashed ? "2" : "2.5",
+      "stroke-width": "2.5",
       "stroke-linejoin": "round",
       "stroke-linecap": "round",
-      "stroke-dasharray": dashed ? "5 4" : "none",
     })
   );
-}
-
-function addLegend(svg, items, width) {
-  let x = width - 16;
-  items
-    .slice()
-    .reverse()
-    .forEach((item) => {
-      const labelWidth = item.label.length * 6.2 + 18;
-      x -= labelWidth;
-
-      svg.appendChild(
-        createSvgEl("line", {
-          x1: String(x),
-          y1: "12",
-          x2: String(x + 14),
-          y2: "12",
-          stroke: item.color,
-          "stroke-width": "2",
-          "stroke-dasharray": item.dashed ? "4 3" : "none",
-        })
-      );
-
-      const text = createSvgEl("text", {
-        x: String(x + 18),
-        y: "15",
-        fill: palette.inkDim,
-        "font-size": "10",
-        "font-family": "IBM Plex Mono, monospace",
-      });
-      text.textContent = item.label;
-      svg.appendChild(text);
-    });
 }
 
 /**
  * @param {SVGElement} svg
  * @param {object} options
  * @param {Array} options.transactions - current user XP txs
- * @param {'cohort'|'all'|null} options.compareMode
- * @param {Array} [options.cohortTransactions]
- * @param {Array} [options.allTransactions]
  * @param {HTMLElement} [options.tooltip]
  */
 export function renderXpLineChart(svg, options = {}) {
-  const {
-    transactions,
-    compareMode = null,
-    cohortTransactions = [],
-    allTransactions = [],
-    tooltip = null,
-  } = typeof options === "object" && !Array.isArray(options)
-    ? options
-    : { transactions: options };
+  const { transactions, tooltip = null } =
+    typeof options === "object" && !Array.isArray(options)
+      ? options
+      : { transactions: options };
 
   clearSvg(svg);
   if (svg._xpCleanup) {
@@ -157,34 +90,23 @@ export function renderXpLineChart(svg, options = {}) {
   const own = toCumulativeSeries(transactions);
 
   if (!own.dates.length) {
-    showEmptyChart(svg, "No XP data available");
+    showEmptyChart(svg, "No XP data available", 640, 300, {
+      title: "XP overtime",
+      desc: "No XP transactions available to chart yet.",
+    });
     return;
   }
 
-  const compareTx =
-    compareMode === "cohort"
-      ? cohortTransactions
-      : compareMode === "all"
-        ? allTransactions
-        : [];
-  const compareValues = compareMode
-    ? averageCumulativeByDate(compareTx, own.dates)
-    : [];
-
   const width = 640;
   const height = 300;
-  const margin = { top: 28, right: 24, bottom: 48, left: 64 };
+  const margin = { top: 20, right: 24, bottom: 48, left: 64 };
   const chartW = width - margin.left - margin.right;
   const chartH = height - margin.top - margin.bottom;
-
-  const compareMax = Math.max(
-    0,
-    ...compareValues.filter((v) => v != null)
-  );
-  const maxY = Math.max(...own.values, compareMax, 1);
+  const maxY = Math.max(...own.values, 1);
 
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
   svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+  setSvgA11y(svg, "Cumulative XP over time", "Your cumulative XP over time.");
 
   const xAt = (index) =>
     margin.left +
@@ -231,39 +153,10 @@ export function renderXpLineChart(svg, options = {}) {
     x: xAt(index),
     y: yAt(value),
     value,
-    date: own.dates[index],
-    compare:
-      compareValues[index] != null ? compareValues[index] : null,
+    date: formatDayLabel(own.dates[index]),
   }));
 
-  drawSeries(svg, ownPoints, palette.amber, false);
-
-  if (compareMode) {
-    const comparePoints = ownPoints
-      .map((point, index) =>
-        compareValues[index] != null
-          ? { x: point.x, y: yAt(compareValues[index]) }
-          : null
-      )
-      .filter(Boolean);
-    drawSeries(svg, comparePoints, palette.cyan, true);
-  }
-
-  const legendItems = [{ label: "You", color: palette.amber, dashed: false }];
-  if (compareMode === "cohort") {
-    legendItems.push({
-      label: "Cohort avg",
-      color: palette.cyan,
-      dashed: true,
-    });
-  } else if (compareMode === "all") {
-    legendItems.push({
-      label: "All students avg",
-      color: palette.cyan,
-      dashed: true,
-    });
-  }
-  addLegend(svg, legendItems, width);
+  drawSeries(svg, ownPoints, palette.amber);
 
   ownPoints.forEach((point) => {
     svg.appendChild(
@@ -275,18 +168,6 @@ export function renderXpLineChart(svg, options = {}) {
         class: "xp-point",
       })
     );
-
-    if (point.compare != null) {
-      svg.appendChild(
-        createSvgEl("circle", {
-          cx: String(point.x),
-          cy: String(yAt(point.compare)),
-          r: "3",
-          fill: palette.cyan,
-          class: "xp-point",
-        })
-      );
-    }
   });
 
   const maxLabel = createSvgEl("text", {
@@ -316,7 +197,7 @@ export function renderXpLineChart(svg, options = {}) {
     "font-size": "10",
     "font-family": "IBM Plex Mono, monospace",
   });
-  first.textContent = own.dates[0];
+  first.textContent = formatDayLabel(own.dates[0]);
   svg.appendChild(first);
 
   const last = createSvgEl("text", {
@@ -327,7 +208,7 @@ export function renderXpLineChart(svg, options = {}) {
     "text-anchor": "end",
     "font-family": "IBM Plex Mono, monospace",
   });
-  last.textContent = own.dates[own.dates.length - 1];
+  last.textContent = formatDayLabel(own.dates[own.dates.length - 1]);
   svg.appendChild(last);
 
   const guide = createSvgEl("line", {
@@ -350,6 +231,9 @@ export function renderXpLineChart(svg, options = {}) {
     height: String(chartH),
     fill: "transparent",
     style: "cursor:crosshair",
+    tabindex: "0",
+    role: "img",
+    "aria-label": "XP overtime chart interaction area",
   });
   svg.appendChild(hit);
 
@@ -369,6 +253,9 @@ export function renderXpLineChart(svg, options = {}) {
     return best;
   };
 
+  const tipForPoint = (point) =>
+    `<b>${point.date}</b><br>${formatXp(point.value)}`;
+
   const showTip = (event) => {
     const index = nearestIndex(event.clientX);
     const point = ownPoints[index];
@@ -377,23 +264,10 @@ export function renderXpLineChart(svg, options = {}) {
     guide.setAttribute("opacity", "1");
 
     if (!tooltip) return;
-
-    const compareLabel =
-      compareMode === "cohort"
-        ? "Cohort avg"
-        : compareMode === "all"
-          ? "All students avg"
-          : null;
-
-    let html = `<b>${point.date}</b><br>You: ${formatXp(point.value)}`;
-    if (compareLabel && point.compare != null) {
-      html += `<br>${compareLabel}: ${formatXp(point.compare)}`;
-    }
-
     tooltip.style.display = "block";
     tooltip.style.left = `${event.clientX + 14}px`;
     tooltip.style.top = `${event.clientY + 14}px`;
-    tooltip.innerHTML = html;
+    tooltip.innerHTML = tipForPoint(point);
   };
 
   const hideTip = () => {
@@ -401,12 +275,29 @@ export function renderXpLineChart(svg, options = {}) {
     if (tooltip) tooltip.style.display = "none";
   };
 
+  const onFocus = () => {
+    const point = ownPoints[ownPoints.length - 1];
+    guide.setAttribute("x1", String(point.x));
+    guide.setAttribute("x2", String(point.x));
+    guide.setAttribute("opacity", "1");
+    if (!tooltip) return;
+    const rect = svg.getBoundingClientRect();
+    tooltip.style.display = "block";
+    tooltip.style.left = `${rect.left + rect.width * 0.55}px`;
+    tooltip.style.top = `${rect.top + 24}px`;
+    tooltip.innerHTML = tipForPoint(point);
+  };
+
   hit.addEventListener("mousemove", showTip);
   hit.addEventListener("mouseleave", hideTip);
+  hit.addEventListener("focus", onFocus);
+  hit.addEventListener("blur", hideTip);
 
   svg._xpCleanup = () => {
     hit.removeEventListener("mousemove", showTip);
     hit.removeEventListener("mouseleave", hideTip);
+    hit.removeEventListener("focus", onFocus);
+    hit.removeEventListener("blur", hideTip);
     hideTip();
   };
 }
