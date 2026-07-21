@@ -2,7 +2,6 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 export const palette = {
   amber: "#E3993A",
-  cyan: "#5FC9C0",
   rose: "#D96B6B",
   ink: "#E7EEF4",
   inkDim: "#93A9C0",
@@ -112,52 +111,4 @@ export function placeTooltip(tooltip, eventOrEl, html) {
 
 export function hideTooltip(tooltip) {
   if (tooltip) tooltip.style.display = "none";
-}
-
-/** Mix amber intensity by t in [0,1] (higher = more XP / more saturated). */
-export function amberByIntensity(t) {
-  const clamped = Math.min(Math.max(t, 0), 1);
-  const r = Math.round(90 + (227 - 90) * clamped);
-  const g = Math.round(70 + (153 - 70) * clamped);
-  const b = Math.round(40 + (58 - 40) * clamped);
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
-/**
- * Bind pointer + keyboard tooltip handlers. Returns a cleanup function.
- */
-export function bindTooltipTarget(el, tooltip, getContent) {
-  if (!el || !tooltip) return () => {};
-
-  const show = (eventOrEl) => placeTooltip(tooltip, eventOrEl, getContent());
-  const hide = () => hideTooltip(tooltip);
-
-  const onEnter = (event) => show(event);
-  const onMove = (event) => placeTooltip(tooltip, event, getContent());
-  const onLeave = () => hide();
-  const onFocus = () => show(el);
-  const onBlur = () => hide();
-  const onKey = (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      show(el);
-    }
-  };
-
-  el.addEventListener("mouseenter", onEnter);
-  el.addEventListener("mousemove", onMove);
-  el.addEventListener("mouseleave", onLeave);
-  el.addEventListener("focus", onFocus);
-  el.addEventListener("blur", onBlur);
-  el.addEventListener("keydown", onKey);
-
-  return () => {
-    el.removeEventListener("mouseenter", onEnter);
-    el.removeEventListener("mousemove", onMove);
-    el.removeEventListener("mouseleave", onLeave);
-    el.removeEventListener("focus", onFocus);
-    el.removeEventListener("blur", onBlur);
-    el.removeEventListener("keydown", onKey);
-    hide();
-  };
 }

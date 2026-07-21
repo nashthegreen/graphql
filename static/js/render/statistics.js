@@ -18,7 +18,7 @@ function redrawTreemap() {
   if (!treemapEls) return;
   renderXpTreemap(
     treemapEls.treemap,
-    treemapEls.treemapTooltip,
+    treemapEls.chartTooltip,
     latestTopProjects
   );
 }
@@ -47,7 +47,7 @@ export function renderStatistics(data, els) {
 
   xpChartState = {
     transactions: data.xpTransactions || [],
-    tooltip: els.chartTooltip || els.treemapTooltip,
+    tooltip: els.chartTooltip,
     svg: els.xpChart,
   };
 
@@ -55,7 +55,7 @@ export function renderStatistics(data, els) {
   renderAuditPieChart(els.auditChart, user, {
     upCount: auditsUp,
     downCount: auditsDown,
-    tooltip: els.chartTooltip || els.treemapTooltip,
+    tooltip: els.chartTooltip,
   });
   redrawTreemap();
   renderProjectLists(

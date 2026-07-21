@@ -38,7 +38,6 @@ export const PROFILE_QUERY = `
       }
     ) {
       status
-      updatedAt
       members {
         userId
         userLogin
@@ -61,26 +60,6 @@ export const PROFILE_QUERY = `
       amount
       createdAt
       path
-      userId
-      user {
-        login
-      }
-    }
-    xpTotal: transaction_aggregate(
-      where: {
-        type: { _eq: "xp" }
-        userId: { _eq: $userId }
-        _and: [
-          { path: { _like: $xpPath } }
-          { path: { _nilike: $xpExclude } }
-        ]
-      }
-    ) {
-      aggregate {
-        sum {
-          amount
-        }
-      }
     }
     xpUp: transaction_aggregate(
       where: {
@@ -111,7 +90,6 @@ export const PROFILE_QUERY = `
       limit: 1
     ) {
       amount
-      path
     }
     moduleEvent: event_user(
       where: {
@@ -127,13 +105,8 @@ export const PROFILE_QUERY = `
       limit: 1
     ) {
       level
-      eventId
       event {
-        id
-        path
         object {
-          name
-          type
           attrs
         }
       }
@@ -145,7 +118,6 @@ export const PROFILE_QUERY = `
       }
       limit: 1
     ) {
-      name
       attrs
     }
     skills: transaction(
@@ -155,29 +127,6 @@ export const PROFILE_QUERY = `
     ) {
       type
       amount
-      object {
-        name
-        type
-      }
-    }
-    progressDone: progress_aggregate(where: { isDone: { _eq: true } }) {
-      aggregate {
-        count
-      }
-    }
-    auditsUp: transaction_aggregate(
-      where: { type: { _eq: "up" }, userId: { _eq: $userId } }
-    ) {
-      aggregate {
-        count
-      }
-    }
-    auditsDown: transaction_aggregate(
-      where: { type: { _eq: "down" }, userId: { _eq: $userId } }
-    ) {
-      aggregate {
-        count
-      }
     }
   }
 `;

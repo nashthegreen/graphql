@@ -34,7 +34,7 @@ function decodeBase64Url(value) {
   return atob(padded);
 }
 
-export function parseJwtPayload(token) {
+function parseJwtPayload(token) {
   if (!isJwtFormat(token)) return null;
 
   try {

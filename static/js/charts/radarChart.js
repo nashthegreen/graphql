@@ -55,7 +55,7 @@ function prepareSkills(skills, predicate) {
     .slice(0, 8);
 }
 
-export function splitSkills(skills) {
+function splitSkills(skills) {
   const tech = prepareSkills(skills, (type) => TECH_TYPES.has(type));
   const domain = prepareSkills(skills, (type) => !TECH_TYPES.has(type));
   return { domain, tech };
@@ -69,7 +69,7 @@ export function splitSkills(skills) {
  * @param {HTMLElement|null} [tooltip]
  * @param {'skill'|'technology'} [kind]
  */
-export function renderRadarChart(
+function renderRadarChart(
   svg,
   skills,
   emptyMessage = "No skills data available",

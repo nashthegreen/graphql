@@ -21,15 +21,20 @@
       <div class="sheet auth-sheet">
         <div class="titleblock">
           <div>
-            <div class="eyebrow">GraphQL / EDU01 — AUTH</div>
+            <div class="eyebrow">REBOOT01</div>
             <h1>Sign in</h1>
           </div>
           <div class="meta">
-            SOURCE — <b>JWT</b><br />
-            ENDPOINT — <b>signin</b>
+            SOURCE —
+            <a
+              href="https://learn.reboot01.com/api/graphql-engine/v1/graphql"
+              target="_blank"
+              rel="noopener noreferrer"
+              ><b>GraphQL API</b></a
+            >
           </div>
         </div>
-        <p class="subtitle">Access your school profile data</p>
+        <p class="subtitle">Access your <em>01 Dashboard</em></p>
         <form id="login-form">
           <div class="form-group">
             <label for="login-identifier">Username or Email</label>
@@ -64,11 +69,17 @@
         <div class="titleblock">
           <div>
             <a href="./" class="eyebrow brand-link" title="Refresh">REBOOT01 &gt;&gt; GRAPHQL</a>
-            <div class="eyebrow welcome-eyebrow">Welcome to your dashboard,</div>
-            <h1 id="profile-title">—</h1>
+            <h1 id="profile-title">Welcome to your dashboard, —!</h1>
           </div>
           <div class="meta">
-            SOURCE — <b>GraphQL API</b> (JWT authenticated)<br />
+            SOURCE —
+            <a
+              href="https://learn.reboot01.com/api/graphql-engine/v1/graphql"
+              target="_blank"
+              rel="noopener noreferrer"
+              ><b>GraphQL API</b></a
+            >
+            (JWT authenticated)<br />
             USER — <b id="profile-login">—</b><br />
             <button type="button" id="logout-btn" class="btn-toggle logout-btn">
               Logout
@@ -80,7 +91,7 @@
 
         <div class="layout">
           <aside class="dev-info panel">
-            <div class="eyebrow">Fig. 01 — Developer Info</div>
+            <div class="eyebrow">Developer Info</div>
 
             <div class="dev-name" id="dev-name">—</div>
             <div class="dev-idline">
@@ -160,7 +171,7 @@
               <div class="stat-grid">
                 <div class="panel full">
                   <div class="panel-head">
-                    <div class="eyebrow">Fig. 02 — XP Overtime</div>
+                    <div class="eyebrow">Fig. 01 — XP Progression</div>
                   </div>
                   <div class="chart-wrap">
                     <svg
@@ -174,7 +185,7 @@
 
                 <div class="panel">
                   <div class="panel-head">
-                    <div class="eyebrow">Fig. 03 — Audit Ratio</div>
+                    <div class="eyebrow">Fig. 02 — Audit Ratio</div>
                     <span class="panel-hint">hover / focus for detail</span>
                   </div>
                   <div class="stat-pills">
@@ -197,7 +208,7 @@
 
                 <div class="panel">
                   <div class="panel-head">
-                    <div class="eyebrow">Fig. 04 — Project XP Treemap</div>
+                    <div class="eyebrow">Fig. 03 — Project XP Treemap</div>
                     <span class="panel-hint">hover / focus for detail</span>
                   </div>
                   <div class="treemap-wrap" id="treemap"></div>
@@ -213,7 +224,7 @@
               <div class="spider-row">
                 <div class="panel">
                   <div class="panel-head">
-                    <div class="eyebrow">Fig. 05 — Skills</div>
+                    <div class="eyebrow">Fig. 04 — Skills</div>
                     <span class="panel-hint">hover / focus for detail</span>
                   </div>
                   <svg
@@ -225,7 +236,7 @@
                 </div>
                 <div class="panel">
                   <div class="panel-head">
-                    <div class="eyebrow">Fig. 06 — Technologies</div>
+                    <div class="eyebrow">Fig. 05 — Technologies</div>
                     <span class="panel-hint">hover / focus for detail</span>
                   </div>
                   <svg
@@ -240,7 +251,7 @@
               <div class="lists-row">
                 <div class="panel full-list">
                   <div class="panel-head">
-                    <div class="eyebrow">Fig. 07 — Last 5 Projects</div>
+                    <div class="eyebrow">Last 5 Projects</div>
                   </div>
                   <ul class="data-list" id="recent-projects-list"></ul>
                 </div>
@@ -250,7 +261,7 @@
                 Data loaded from GraphQL:
                 <b>user</b>, <b>transaction</b> (xp / level / skills),
                 <b>event_user</b> / <b>object</b> (module ranks),
-                <b>group</b> (best friend), <b>progress</b> (completed count).
+                <b>group</b> (best friend).
                 Charts rendered with SVG.
               </footer>
             </section>

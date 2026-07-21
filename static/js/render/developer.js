@@ -99,7 +99,7 @@ function resolveBestFriend(groups, selfLogin, selfId) {
     .filter((group) => group?.status === "finished" && group.members?.length > 1)
     .forEach((group) => {
       group.members.forEach((member) => {
-        const login = member?.login || member?.userLogin || member?.user?.login;
+        const login = member?.userLogin || member?.user?.login;
         const id = member?.userId ?? member?.user?.id;
         if (!login) return;
         if (selfLogin && login === selfLogin) return;
@@ -129,7 +129,6 @@ export function renderDeveloperInfo(data, els) {
   const rank = getRank(level, ranksDefinitions);
   const totalXp =
     data.xpUp?.aggregate?.sum?.amount ??
-    data.xpTotal?.aggregate?.sum?.amount ??
     (data.xpTransactions || []).reduce(
       (sum, tx) => sum + (tx.amount > 0 ? tx.amount : 0),
       0
@@ -146,7 +145,7 @@ export function renderDeveloperInfo(data, els) {
   const latest = recent[0];
   const bestFriend = resolveBestFriend(data.finishedGroups, login, userId);
 
-  els.title.textContent = fullName || login || "—";
+  els.title.textContent = `Welcome to your dashboard, ${fullName || login || "—"}!`;
   els.login.textContent = `@${login}`;
   els.devName.textContent = fullName || login || "—";
   els.devLogin.textContent = login || "—";

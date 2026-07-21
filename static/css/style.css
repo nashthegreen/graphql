@@ -56,14 +56,6 @@ body {
   color: var(--accent-amber);
 }
 
-.welcome-eyebrow {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: none;
-  color: var(--ink-dim);
-  margin-top: 10px;
-}
-
 .brand-link {
   display: inline-block;
   text-decoration: none;
@@ -146,6 +138,16 @@ body {
   font-weight: 500;
 }
 
+.titleblock .meta a {
+  color: var(--accent-cyan);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.titleblock .meta a:hover {
+  color: var(--ink);
+}
+
 .layout {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -212,11 +214,6 @@ body {
   color: var(--ink-faint);
   text-align: center;
   padding: 24px 12px;
-}
-
-.btn-toggle.active {
-  border-color: var(--accent-amber);
-  color: var(--accent-amber);
 }
 
 .btn-toggle {

@@ -36,7 +36,6 @@ export const profileEl = {
   xpChart: document.getElementById("xp-line-chart"),
   auditChart: document.getElementById("audit-pie-chart"),
   treemap: document.getElementById("treemap"),
-  treemapTooltip: document.getElementById("tm-tooltip"),
   chartTooltip: document.getElementById("tm-tooltip"),
   topProjectsList: document.getElementById("top-projects-list"),
 

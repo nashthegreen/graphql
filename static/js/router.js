@@ -3,7 +3,6 @@ import { views } from "./dom.js";
 import { loadProfile } from "./profile.js";
 
 export function showView(name) {
-  views.loading?.classList.add("hidden");
   Object.values(views).forEach((view) => view?.classList.add("hidden"));
   views[name]?.classList.remove("hidden");
 }
@@ -25,7 +24,10 @@ export function resolveRoute(path = location.pathname) {
       return;
     }
     showView("login");
+    return;
   }
+
+  navigate("/login", { replace: true });
 }
 
 export function navigate(path, { replace = false } = {}) {

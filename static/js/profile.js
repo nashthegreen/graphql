@@ -31,7 +31,7 @@ function renderProfile(data) {
   renderDeveloperInfo(data, profileEl);
   renderStatistics(data, profileEl);
   const skills = data.skills || [];
-  const tip = profileEl.chartTooltip || profileEl.treemapTooltip;
+  const tip = profileEl.chartTooltip;
   renderSkillsRadarChart(profileEl.skillsChart, skills, tip);
   renderTechRadarChart(profileEl.techChart, skills, tip);
 }

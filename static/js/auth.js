@@ -1,8 +1,8 @@
 import { signIn } from "./api.js";
 import { loginEl, logoutBtn } from "./dom.js";
-import { loadProfile } from "./profile.js";
-import { navigate, showView } from "./router.js";
+import { navigate, resolveRoute } from "./router.js";
 import { clearToken, getToken, setToken } from "./token.js";
+
 function showLoginError(message) {
   loginEl.error.textContent = message;
 }
@@ -11,14 +11,7 @@ function clearLoginError() {
   loginEl.error.textContent = "";
 }
 
-export function enterProfile() {
-  showView("profile");
-  if (location.pathname !== "/profile") {
-    history.replaceState({ path: "/profile" }, "", "/profile");
-  }
-  loadProfile();
-}
-export function logout() {
+function logout() {
   clearToken();
   loginEl.form.reset();
   clearLoginError();
@@ -27,27 +20,8 @@ export function logout() {
 
 export function checkSession() {
   const stored = getToken();
-
-  if (stored && setToken(stored)) {
-    if (location.pathname === "/login" || location.pathname === "/") {
-      enterProfile();
-      return;
-    }
-
-    showView("profile");
-    loadProfile();
-    return;
-  }
-
-  if (location.pathname === "/profile") {
-    navigate("/login", { replace: true });
-    return;
-  }
-
-  showView("login");
-  if (location.pathname !== "/login" && location.pathname !== "/") {
-    history.replaceState({ path: "/login" }, "", "/login");
-  }
+  if (stored) setToken(stored);
+  resolveRoute(location.pathname);
 }
 
 export function bindAuthEvents() {
@@ -79,7 +53,7 @@ export function bindAuthEvents() {
       }
 
       loginEl.form.reset();
-      enterProfile();
+      navigate("/profile", { replace: true });
     } catch {
       showLoginError("Unable to sign in. Please try again.");
     } finally {

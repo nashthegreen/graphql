@@ -33,7 +33,7 @@ function formatDayLabel(isoDay) {
 /**
  * Build daily cumulative XP for one user from their transactions.
  */
-export function toCumulativeSeries(transactions) {
+function toCumulativeSeries(transactions) {
   const dailyXp = {};
 
   (transactions || []).forEach((tx) => {
@@ -91,7 +91,7 @@ export function renderXpLineChart(svg, options = {}) {
 
   if (!own.dates.length) {
     showEmptyChart(svg, "No XP data available", 640, 300, {
-      title: "XP overtime",
+      title: "XP Progression",
       desc: "No XP transactions available to chart yet.",
     });
     return;
