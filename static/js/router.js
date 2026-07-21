@@ -1,3 +1,4 @@
+import { withBase, stripBase } from "./base.js";
 import { isAuthenticated } from "./token.js";
 import { views } from "./dom.js";
 import { loadProfile } from "./profile.js";
@@ -8,7 +9,9 @@ export function showView(name) {
 }
 
 export function resolveRoute(path = location.pathname) {
-  if (path === "/profile") {
+  const route = stripBase(path);
+
+  if (route === "/profile") {
     if (!isAuthenticated()) {
       navigate("/login", { replace: true });
       return;
@@ -18,7 +21,7 @@ export function resolveRoute(path = location.pathname) {
     return;
   }
 
-  if (path === "/login" || path === "/") {
+  if (route === "/login" || route === "/") {
     if (isAuthenticated()) {
       navigate("/profile", { replace: true });
       return;
@@ -31,13 +34,14 @@ export function resolveRoute(path = location.pathname) {
 }
 
 export function navigate(path, { replace = false } = {}) {
-  const url = path.startsWith("/") ? path : `/${path}`;
+  const route = path.startsWith("/") ? path : `/${path}`;
+  const url = withBase(route);
 
   if (replace) {
-    history.replaceState({ path: url }, "", url);
+    history.replaceState({ path: route }, "", url);
   } else {
-    history.pushState({ path: url }, "", url);
+    history.pushState({ path: route }, "", url);
   }
 
-  resolveRoute(url);
+  resolveRoute(route);
 }

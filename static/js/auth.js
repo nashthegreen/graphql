@@ -11,7 +11,7 @@ function clearLoginError() {
   loginEl.error.textContent = "";
 }
 
-function logout() {
+export function logout() {
   clearToken();
   loginEl.form.reset();
   clearLoginError();
@@ -48,7 +48,9 @@ export function bindAuthEvents() {
       }
 
       if (!setToken(token)) {
-        showLoginError("Received an invalid session token. Please try again.");
+        showLoginError(
+          "Received an invalid or expired session token. Please try again.",
+        );
         return;
       }
 
@@ -62,4 +64,5 @@ export function bindAuthEvents() {
   });
 
   logoutBtn?.addEventListener("click", logout);
+  window.addEventListener("session-expired", logout);
 }

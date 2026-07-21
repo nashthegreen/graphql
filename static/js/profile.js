@@ -1,4 +1,4 @@
-import { graphqlRequest } from "./api.js";
+import { graphqlRequest, SessionExpiredError } from "./api.js";
 import {
   LEVEL_PATH_LIKE,
   MODULE_PATH,
@@ -13,7 +13,7 @@ import { profileEl } from "./dom.js";
 import { USER_ID_QUERY, PROFILE_QUERY } from "./queries.js";
 import { renderDeveloperInfo } from "./render/developer.js";
 import { renderStatistics } from "./render/statistics.js";
-import { appState } from "./state.js";
+import { appState } from "./token.js";
 
 let loading = false;
 
@@ -79,6 +79,7 @@ export async function loadProfile() {
 
     renderProfile(result.data);
   } catch (error) {
+    if (error instanceof SessionExpiredError) return;
     showProfileError(error.message || "Failed to load profile data.");
   } finally {
     loading = false;

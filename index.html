@@ -4,6 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GraphQL — Developer Profile Sheet</title>
+    <!-- Restore path after GitHub Pages 404.html redirect (see 404.html). -->
+    <script>
+      (function () {
+        var l = window.location;
+        if (l.search[1] === "/") {
+          var decoded = l.search
+            .slice(1)
+            .split("&")
+            .map(function (s) {
+              return s.replace(/~and~/g, "&");
+            })
+            .join("?");
+          window.history.replaceState(
+            null,
+            null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -186,7 +206,7 @@
                 <div class="panel">
                   <div class="panel-head">
                     <div class="eyebrow">Fig. 02 — Audit Ratio</div>
-                    <span class="panel-hint">hover / focus for detail</span>
+                    <span class="panel-hint">Hover for details</span>
                   </div>
                   <div class="stat-pills">
                     <div class="stat-pill stat-pill-up">
@@ -209,9 +229,14 @@
                 <div class="panel">
                   <div class="panel-head">
                     <div class="eyebrow">Fig. 03 — Project XP Treemap</div>
-                    <span class="panel-hint">hover / focus for detail</span>
+                    <span class="panel-hint">Hover for details</span>
                   </div>
-                  <div class="treemap-wrap" id="treemap"></div>
+                  <svg
+                    id="treemap"
+                    class="chart-svg chart-svg-treemap"
+                    role="img"
+                    aria-label="Treemap of project XP by relative size"
+                  ></svg>
                   <div class="eyebrow list-subhead">Top 3 Projects by XP</div>
                   <ul class="data-list data-list-compact" id="top-projects-list"></ul>
                 </div>
@@ -225,7 +250,7 @@
                 <div class="panel">
                   <div class="panel-head">
                     <div class="eyebrow">Fig. 04 — Skills</div>
-                    <span class="panel-hint">hover / focus for detail</span>
+                    <span class="panel-hint">Hover for details</span>
                   </div>
                   <svg
                     id="skills-radar-chart"
@@ -237,7 +262,7 @@
                 <div class="panel">
                   <div class="panel-head">
                     <div class="eyebrow">Fig. 05 — Technologies</div>
-                    <span class="panel-hint">hover / focus for detail</span>
+                    <span class="panel-hint">Hover for details</span>
                   </div>
                   <svg
                     id="tech-radar-chart"

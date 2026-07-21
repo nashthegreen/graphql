@@ -2,7 +2,7 @@ import { renderXpLineChart } from "../charts/lineChart.js";
 import { renderAuditPieChart } from "../charts/pieChart.js";
 import { formatXp } from "../charts/utils.js";
 import { summarizeProjects, renderProjectLists } from "./projects.js";
-import { renderXpTreemap } from "./treemap.js";
+import { renderXpTreemap } from "../charts/treemap.js";
 
 let latestTopProjects = [];
 let treemapResizeBound = false;

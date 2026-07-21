@@ -1,6 +1,10 @@
 import { TOKEN_KEY } from "./constants.js";
-import { getUserIdFromToken, isJwtFormat } from "./jwt.js";
-import { appState } from "./state.js";
+import { getUserIdFromToken, isJwtValid } from "./jwt.js";
+
+export const appState = {
+  token: null,
+  userId: null,
+};
 
 export function getToken() {
   return appState.token || localStorage.getItem(TOKEN_KEY);
@@ -9,7 +13,7 @@ export function getToken() {
 export function setToken(token) {
   const cleaned = String(token || "").trim();
 
-  if (!isJwtFormat(cleaned)) {
+  if (!isJwtValid(cleaned)) {
     clearToken();
     return false;
   }
@@ -28,5 +32,9 @@ export function clearToken() {
 
 export function isAuthenticated() {
   const token = getToken();
-  return isJwtFormat(token);
+  if (!isJwtValid(token)) {
+    if (token) clearToken();
+    return false;
+  }
+  return true;
 }

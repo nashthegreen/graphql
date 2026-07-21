@@ -1,0 +1,8 @@
+{
+  "name": "graphql-profile",
+  "private": true,
+  "description": "Reboot01 GraphQL developer profile dashboard",
+  "scripts": {
+    "start": "npx --yes serve -c serve.json ."
+  }
+}

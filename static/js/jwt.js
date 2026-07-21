@@ -44,6 +44,19 @@ function parseJwtPayload(token) {
   }
 }
 
+/** True when the token has an `exp` claim that is at or before now. */
+export function isJwtExpired(token) {
+  const payload = parseJwtPayload(token);
+  if (!payload) return true;
+  if (typeof payload.exp !== "number") return false;
+  return Date.now() >= payload.exp * 1000;
+}
+
+/** Format-valid and not past `exp`. */
+export function isJwtValid(token) {
+  return isJwtFormat(token) && !isJwtExpired(token);
+}
+
 export function getUserIdFromToken(token) {
   const payload = parseJwtPayload(token);
   if (!payload) return null;
