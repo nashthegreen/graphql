@@ -69,8 +69,8 @@ Open the URL shown. Routes `/login` and `/profile` rewrite to `index.html`.
 
 Deploys from `main` via [`.github/workflows/pages.yml`](.github/workflows/pages.yml).
 
-1. Push the repo to GitHub.
-2. **Settings → Pages → Source:** GitHub Actions.
-3. Site: `https://<user>.github.io/<repo>/`
+**Live site:** https://nashthegreen.github.io/graphql/
+
+Repo: https://github.com/nashthegreen/graphql — **Settings → Pages → Source:** GitHub Actions.
 
 Base-path routing + `404.html` cover project Pages URLs. Auth still hits `learn.reboot01.com` (CORS must allow the Pages origin).
