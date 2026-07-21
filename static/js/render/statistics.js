@@ -5,8 +5,9 @@ import { summarizeProjects, renderProjectLists } from "./projects.js";
 import { renderXpTreemap } from "../charts/treemap.js";
 
 let latestTopProjects = [];
-let treemapResizeBound = false;
 let treemapEls = null;
+let treemapObserver = null;
+let resizeTimer = 0;
 
 let xpChartState = {
   transactions: [],
@@ -29,6 +30,25 @@ function redrawXpChart() {
     transactions: xpChartState.transactions,
     tooltip: xpChartState.tooltip,
   });
+}
+
+function scheduleChartResize() {
+  window.clearTimeout(resizeTimer);
+  resizeTimer = window.setTimeout(() => {
+    redrawTreemap();
+    redrawXpChart();
+  }, 80);
+}
+
+function bindTreemapResize(svg) {
+  if (!svg || treemapObserver) return;
+
+  if (typeof ResizeObserver !== "undefined") {
+    treemapObserver = new ResizeObserver(scheduleChartResize);
+    treemapObserver.observe(svg);
+  } else {
+    window.addEventListener("resize", scheduleChartResize);
+  }
 }
 
 export function renderStatistics(data, els) {
@@ -64,11 +84,5 @@ export function renderStatistics(data, els) {
     els.topProjectsList
   );
 
-  if (!treemapResizeBound) {
-    treemapResizeBound = true;
-    window.addEventListener("resize", () => {
-      redrawTreemap();
-      redrawXpChart();
-    });
-  }
+  bindTreemapResize(els.treemap);
 }

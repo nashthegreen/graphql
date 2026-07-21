@@ -525,6 +525,8 @@ section.block > h2::after {
 }
 
 .chart-svg-treemap {
+  /* Fixed height so JS can measure a stable box inside the responsive grid. */
+  height: 220px;
   min-height: 220px;
 }
 

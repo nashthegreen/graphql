@@ -117,6 +117,21 @@ function squarify(items, x, y, w, h) {
 }
 
 /**
+ * Read the SVG's laid-out CSS box so squarify matches the responsive panel
+ * (not a demo-fixed 640×280). Falls back when the node is still hidden.
+ * @param {SVGElement} svg
+ */
+function measureTreemapSize(svg) {
+  const box = svg.getBoundingClientRect();
+  const width = Math.round(box.width || svg.clientWidth || 0);
+  const height = Math.round(box.height || svg.clientHeight || 0);
+  return {
+    width: width > 1 ? width : 640,
+    height: height > 1 ? height : 220,
+  };
+}
+
+/**
  * @param {SVGElement} svg
  * @param {HTMLElement} tooltip
  * @param {Array<{ name: string, xp: number }>} projects
@@ -136,16 +151,16 @@ export function renderXpTreemap(svg, tooltip, projects) {
     .map((project) => ({ name: project.name, value: project.xp }))
     .sort((a, b) => b.value - a.value);
 
+  const { width, height } = measureTreemapSize(svg);
+
   if (!items.length) {
-    showEmptyChart(svg, "No project XP yet", 640, 280, {
+    showEmptyChart(svg, "No project XP yet", width, height, {
       title: "Project XP treemap",
       desc: "No project XP available to chart yet.",
     });
     return;
   }
 
-  const width = 640;
-  const height = 280;
   const gap = 1;
   const total = items.reduce((sum, item) => sum + item.value, 0);
   const maxXp = items[0]?.value || 1;
