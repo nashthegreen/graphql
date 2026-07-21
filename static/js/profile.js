@@ -1,8 +1,13 @@
 import { graphqlRequest } from "./api.js";
-import { XP_PATH_EXCLUDE, XP_PATH_LIKE } from "./constants.js";
+import {
+  LEVEL_PATH_LIKE,
+  MODULE_PATH,
+  XP_PATH_EXCLUDE,
+  XP_PATH_LIKE,
+} from "./constants.js";
 import { renderSkillsRadarChart } from "./charts/radarChart.js";
 import { profileEl } from "./dom.js";
-import { USER_ID_QUERY, PROFILE_QUERY } from "./queries.js";
+import { USER_ID_QUERY, PROFILE_QUERY, XP_COMPARE_QUERY } from "./queries.js";
 import { renderDeveloperInfo } from "./render/developer.js";
 import { renderStatistics } from "./render/statistics.js";
 import { appState } from "./state.js";
@@ -23,6 +28,51 @@ function renderProfile(data) {
   renderDeveloperInfo(data, profileEl);
   renderStatistics(data, profileEl);
   renderSkillsRadarChart(profileEl.skillsChart, data.skills || []);
+}
+
+function flattenEventUserXp(rows) {
+  const out = [];
+  (rows || []).forEach((row) => {
+    const userId = row.userId;
+    const login = row.user?.login;
+    (row.user?.transactions || []).forEach((tx) => {
+      out.push({
+        amount: tx.amount,
+        createdAt: tx.createdAt,
+        userId,
+        user: { login },
+      });
+    });
+  });
+  return out;
+}
+
+async function loadXpComparison(eventId) {
+  if (!eventId) return { cohortXp: [], allXp: [] };
+
+  try {
+    const result = await graphqlRequest(XP_COMPARE_QUERY, {
+      eventId: Number(eventId),
+      xpPath: XP_PATH_LIKE,
+      xpExclude: XP_PATH_EXCLUDE,
+      modulePath: MODULE_PATH,
+    });
+
+    if (result.errors?.length) {
+      console.warn("XP compare query:", result.errors[0].message);
+      return { cohortXp: [], allXp: [] };
+    }
+
+    const cohortXp = flattenEventUserXp(result.data?.cohortUsers);
+    const allXp = flattenEventUserXp(result.data?.allUsers);
+    return {
+      cohortXp,
+      allXp: allXp.length ? allXp : cohortXp,
+    };
+  } catch (error) {
+    console.warn("XP compare query failed:", error);
+    return { cohortXp: [], allXp: [] };
+  }
 }
 
 export async function loadProfile() {
@@ -52,6 +102,8 @@ export async function loadProfile() {
       userId,
       xpPath: XP_PATH_LIKE,
       xpExclude: XP_PATH_EXCLUDE,
+      levelPath: LEVEL_PATH_LIKE,
+      modulePath: MODULE_PATH,
     });
 
     if (result.errors?.length) {
@@ -64,7 +116,12 @@ export async function loadProfile() {
       return;
     }
 
-    renderProfile(result.data);
+    const eventId =
+      result.data.moduleEvent?.[0]?.eventId ??
+      result.data.moduleEvent?.[0]?.event?.id;
+
+    const compare = await loadXpComparison(eventId);
+    renderProfile({ ...result.data, ...compare });
   } catch (error) {
     showProfileError(error.message || "Failed to load profile data.");
   } finally {

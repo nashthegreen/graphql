@@ -21,17 +21,28 @@ export const profileEl = {
   devLogin: document.getElementById("dev-login"),
   devEmail: document.getElementById("dev-email"),
   devUserId: document.getElementById("dev-user-id"),
-  devTotalXp: document.getElementById("dev-total-xp"),
+  devBestFriend: document.getElementById("dev-best-friend"),
+  devGitea: document.getElementById("dev-gitea"),
+  devTotalXpNum: document.getElementById("dev-total-xp-num"),
+  devTotalXpUnit: document.getElementById("dev-total-xp-unit"),
   devLevel: document.getElementById("dev-level"),
   devRank: document.getElementById("dev-rank"),
+  devRankSub: document.getElementById("dev-rank-sub"),
+  levelArc: document.getElementById("level-arc"),
+  latestProject: document.getElementById("dev-latest-project"),
 
-  statTotalXp: document.getElementById("stat-total-xp"),
-  statProgressDone: document.getElementById("stat-progress-done"),
-  statAuditRatio: document.getElementById("stat-audit-ratio"),
+  statAuditsUp: document.getElementById("stat-audits-up"),
+  statAuditsDown: document.getElementById("stat-audits-down"),
   xpChart: document.getElementById("xp-line-chart"),
+  xpCompareBtn: document.getElementById("btn-xp-compare"),
   auditChart: document.getElementById("audit-pie-chart"),
+  treemap: document.getElementById("treemap"),
+  treemapTooltip: document.getElementById("tm-tooltip"),
+  chartTooltip: document.getElementById("tm-tooltip"),
 
   skillsChart: document.getElementById("skills-radar-chart"),
+  topProjectsList: document.getElementById("top-projects-list"),
+  recentProjectsList: document.getElementById("recent-projects-list"),
 };
 
 export const logoutBtn = document.getElementById("logout-btn");

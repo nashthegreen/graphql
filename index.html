@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GraphQL Profile</title>
+    <title>GraphQL — Developer Profile Sheet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="static/css/style.css" />
   </head>
   <body>
@@ -12,8 +18,17 @@
     </section>
 
     <section id="login-view" class="view hidden">
-      <div class="card auth-card">
-        <h1>Sign in</h1>
+      <div class="sheet auth-sheet">
+        <div class="titleblock">
+          <div>
+            <div class="eyebrow">GraphQL / EDU01 — AUTH</div>
+            <h1>Sign in</h1>
+          </div>
+          <div class="meta">
+            SOURCE — <b>JWT</b><br />
+            ENDPOINT — <b>signin</b>
+          </div>
+        </div>
         <p class="subtitle">Access your school profile data</p>
         <form id="login-form">
           <div class="form-group">
@@ -44,116 +59,214 @@
       </div>
     </section>
 
-    <section id="profile-view" class="view hidden">
-      <div class="profile-shell">
-        <header class="profile-header">
+    <section id="profile-view" class="view view-profile hidden">
+      <div class="sheet">
+        <div class="titleblock">
           <div>
-            <h1 id="profile-title">My Profile</h1>
-            <p class="profile-subtitle" id="profile-login"></p>
+            <div class="eyebrow">GRAPHQL - REBOOT 01</div>
+            <h1 id="profile-title">Developer Profile</h1>
           </div>
-          <button type="button" id="logout-btn" class="btn btn-secondary">
-            Logout
-          </button>
-        </header>
+          <div class="meta">
+            SOURCE — <b>GraphQL API</b> (JWT authenticated)<br />
+            USER — <b id="profile-login">—</b><br />
+            <button type="button" id="logout-btn" class="btn-toggle logout-btn">
+              Logout
+            </button>
+          </div>
+        </div>
 
         <p class="error hidden" id="profile-error"></p>
 
-        <nav class="profile-tabs" aria-label="Profile sections">
-          <button type="button" class="tab-btn active" data-tab="developer">
-            Developer Info
-          </button>
-          <button type="button" class="tab-btn" data-tab="statistics">
-            Statistics
-          </button>
-          <button type="button" class="tab-btn" data-tab="projects">
-            Projects &amp; Skills
-          </button>
-        </nav>
+        <div class="layout">
+          <aside class="dev-info panel">
+            <div class="eyebrow">Fig. 01 — Developer Info</div>
 
-        <section class="tab-panel" data-tab-panel="developer">
-          <div class="info-grid">
-            <article class="info-card">
-              <h2>Full name</h2>
-              <p class="info-value" id="dev-name">—</p>
-            </article>
-            <article class="info-card">
-              <h2>Login</h2>
-              <p class="info-value" id="dev-login">—</p>
-            </article>
-            <article class="info-card">
-              <h2>Email</h2>
-              <p class="info-value info-value-sm" id="dev-email">—</p>
-            </article>
-            <article class="info-card">
-              <h2>User ID</h2>
-              <p class="info-value" id="dev-user-id">—</p>
-            </article>
-            <article class="info-card">
-              <h2>Total XP</h2>
-              <p class="info-value" id="dev-total-xp">—</p>
-            </article>
-            <article class="info-card">
-              <h2>Level</h2>
-              <p class="info-value" id="dev-level">—</p>
-            </article>
-            <article class="info-card">
-              <h2>Rank</h2>
-              <p class="info-value info-value-sm" id="dev-rank">—</p>
-            </article>
-          </div>
-        </section>
+            <div class="avatar-slot" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                <circle cx="12" cy="8" r="3.4" />
+                <path d="M4.5 20c1.4-4 4.2-6 7.5-6s6.1 2 7.5 6" />
+              </svg>
+            </div>
+            <div class="dev-name" id="dev-name">—</div>
+            <div class="dev-idline">
+              @<span id="dev-login">—</span>
+              <span>·</span>
+              #<span id="dev-user-id">—</span>
+            </div>
 
-        <section class="tab-panel hidden" data-tab-panel="statistics">
-          <div class="info-grid">
-            <article class="info-card">
-              <h2>Total XP</h2>
-              <p class="info-value" id="stat-total-xp">—</p>
-            </article>
-            <article class="info-card">
-              <h2>Progress done</h2>
-              <p class="info-value" id="stat-progress-done">—</p>
-            </article>
-            <article class="info-card">
-              <h2>Audit ratio</h2>
-              <p class="info-value" id="stat-audit-ratio">—</p>
-            </article>
-          </div>
+            <dl class="dev-fields">
+              <dt>Gitea</dt>
+              <dd>
+                <a
+                  id="dev-gitea"
+                  class="gitea-link"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >—</a
+                >
+              </dd>
+              <dt>Email</dt>
+              <dd id="dev-email">—</dd>
+              <dt>Best friend</dt>
+              <dd id="dev-best-friend">—</dd>
+            </dl>
 
-          <div class="charts-grid">
-            <article class="chart-card">
-              <h3>Cumulative XP over time</h3>
-              <svg
-                id="xp-line-chart"
-                class="chart-svg"
-                role="img"
-                aria-label="Line chart of cumulative XP over time"
-              ></svg>
-            </article>
-            <article class="chart-card">
-              <h3>Audit ratio</h3>
-              <svg
-                id="audit-pie-chart"
-                class="chart-svg"
-                role="img"
-                aria-label="Pie chart of audit up versus down votes"
-              ></svg>
-            </article>
-          </div>
-        </section>
+            <div class="level-block">
+              <div class="level-ring">
+                <svg width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
+                  <circle
+                    cx="39"
+                    cy="39"
+                    r="33"
+                    fill="none"
+                    stroke="var(--grid-line)"
+                    stroke-width="7"
+                  />
+                  <circle
+                    id="level-arc"
+                    cx="39"
+                    cy="39"
+                    r="33"
+                    fill="none"
+                    stroke="var(--accent-amber)"
+                    stroke-width="7"
+                    stroke-linecap="round"
+                    stroke-dasharray="207.3"
+                    stroke-dashoffset="207.3"
+                  />
+                </svg>
+                <div class="lvl-num">
+                  <b id="dev-level">—</b>
+                  <small>LEVEL</small>
+                </div>
+              </div>
+              <div class="rank-info">
+                <div class="rank-name" id="dev-rank">—</div>
+                <div class="rank-sub" id="dev-rank-sub">—</div>
+              </div>
+            </div>
 
-        <section class="tab-panel hidden" data-tab-panel="projects">
-          <article class="chart-card chart-card-wide">
-            <h3>Skills radar</h3>
-            <svg
-              id="skills-radar-chart"
-              class="chart-svg chart-svg-radar"
-              role="img"
-              aria-label="Radar chart of skill progression"
-            ></svg>
-          </article>
-        </section>
+            <div class="xp-total">
+              <span class="num" id="dev-total-xp-num">—</span
+              ><span class="unit" id="dev-total-xp-unit"></span>
+              <div class="cap">Total XP</div>
+            </div>
+
+            <div class="latest-proj">
+              <div class="cap">Latest project</div>
+              <div class="name" id="dev-latest-project">—</div>
+            </div>
+          </aside>
+
+          <main>
+            <section class="block">
+              <h2>Statistics</h2>
+              <div class="stat-grid">
+                <div class="panel full">
+                  <div class="panel-head">
+                    <div class="eyebrow">Fig. 02 — XP Overtime</div>
+                    <div class="panel-actions">
+                      <button
+                        type="button"
+                        class="btn-toggle active"
+                        id="btn-xp-compare"
+                        data-mode="cohort"
+                      >
+                        Cohort
+                      </button>
+                    </div>
+                  </div>
+                  <div class="chart-wrap">
+                    <svg
+                      id="xp-line-chart"
+                      class="chart-svg"
+                      role="img"
+                      aria-label="Line chart of cumulative XP over time"
+                    ></svg>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-head">
+                    <div class="eyebrow">Fig. 03 — Audit Ratio</div>
+                    <span class="panel-hint">hover for detail</span>
+                  </div>
+                  <div class="stat-pills">
+                    <div class="stat-pill">
+                      <span class="cap">Audits up</span>
+                      <span class="val" id="stat-audits-up">—</span>
+                    </div>
+                    <div class="stat-pill">
+                      <span class="cap">Audits down</span>
+                      <span class="val" id="stat-audits-down">—</span>
+                    </div>
+                  </div>
+                  <svg
+                    id="audit-pie-chart"
+                    class="chart-svg"
+                    role="img"
+                    aria-label="Pie chart of audit up versus down votes"
+                  ></svg>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-head">
+                    <div class="eyebrow">Fig. 04 — Project XP Treemap</div>
+                    <span class="panel-hint">hover for detail</span>
+                  </div>
+                  <div class="treemap-wrap" id="treemap"></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="block">
+              <h2>Projects &amp; Skills</h2>
+
+              <div class="spider-row">
+                <div class="panel">
+                  <div class="panel-head">
+                    <div class="eyebrow">Fig. 05 — Skills</div>
+                  </div>
+                  <svg
+                    id="skills-radar-chart"
+                    class="chart-svg chart-svg-radar"
+                    role="img"
+                    aria-label="Radar chart of skill progression"
+                  ></svg>
+                </div>
+                <div class="panel">
+                  <div class="panel-head">
+                    <div class="eyebrow">Fig. 06 — Top Projects</div>
+                  </div>
+                  <ul class="data-list" id="top-projects-list"></ul>
+                </div>
+              </div>
+
+              <div class="lists-row">
+                <div class="panel full-list">
+                  <div class="panel-head">
+                    <div class="eyebrow">Fig. 07 — Last 5 Projects</div>
+                  </div>
+                  <ul class="data-list" id="recent-projects-list"></ul>
+                </div>
+              </div>
+
+              <footer class="note">
+                Data loaded from GraphQL:
+                <b>user</b>, <b>transaction</b> (xp / level / skills),
+                <b>event_user</b> / <b>object</b> (module ranks),
+                <b>group</b> (best friend), <b>progress</b> (completed count).
+                XP overtime compares your cumulative total to cohort or all-students
+                averages. Charts rendered with SVG.
+              </footer>
+            </section>
+          </main>
+        </div>
       </div>
     </section>
+
+    <div class="tm-tooltip" id="tm-tooltip"></div>
 
     <script type="module" src="static/js/main.js"></script>
   </body>

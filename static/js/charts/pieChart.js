@@ -1,4 +1,4 @@
-import { createSvgEl, clearSvg, showEmptyChart } from "./utils.js";
+import { createSvgEl, clearSvg, showEmptyChart, palette } from "./utils.js";
 
 function pieSlice(cx, cy, radius, startAngle, endAngle) {
   const x1 = cx + radius * Math.cos(startAngle);
@@ -20,7 +20,7 @@ function addLegend(svg, items, startY) {
         y: String(y),
         width: "14",
         height: "14",
-        rx: "3",
+        rx: "2",
         fill: item.color,
       })
     );
@@ -28,20 +28,37 @@ function addLegend(svg, items, startY) {
     const label = createSvgEl("text", {
       x: "62",
       y: String(y + 12),
-      fill: "#f2f3f5",
+      fill: palette.ink,
       "font-size": "12",
+      "font-family": "IBM Plex Mono, monospace",
     });
     label.textContent = `${item.label}: ${item.value} (${item.percent}%)`;
     svg.appendChild(label);
   });
 }
 
-export function renderAuditPieChart(svg, user) {
+/**
+ * @param {SVGElement} svg
+ * @param {object} user
+ * @param {{ upCount?: number, downCount?: number, tooltip?: HTMLElement }} [extras]
+ */
+export function renderAuditPieChart(svg, user, extras = {}) {
   clearSvg(svg);
+  if (svg._auditCleanup) {
+    svg._auditCleanup();
+    svg._auditCleanup = null;
+  }
 
-  const up = Number(user?.totalUp) || 0;
-  const down = Number(user?.totalDown) || 0;
+  const up =
+    extras.upCount != null
+      ? Number(extras.upCount) || 0
+      : Number(user?.totalUp) || 0;
+  const down =
+    extras.downCount != null
+      ? Number(extras.downCount) || 0
+      : Number(user?.totalDown) || 0;
   const total = up + down;
+  const tooltip = extras.tooltip || null;
 
   if (total === 0) {
     showEmptyChart(svg, "No audit data available", 420, 300);
@@ -61,19 +78,21 @@ export function renderAuditPieChart(svg, user) {
   const slices = [
     {
       value: up,
-      color: "#23a559",
-      label: "Done (up)",
+      color: palette.amber,
+      label: "Audits done (up)",
       start: -Math.PI / 2,
       end: -Math.PI / 2 + upAngle,
     },
     {
       value: down,
-      color: "#f23f43",
-      label: "Received (down)",
+      color: palette.cyan,
+      label: "Audits received (down)",
       start: -Math.PI / 2 + upAngle,
       end: Math.PI * 1.5,
     },
   ];
+
+  const handlers = [];
 
   slices.forEach((slice) => {
     if (slice.value <= 0) return;
@@ -81,11 +100,37 @@ export function renderAuditPieChart(svg, user) {
     const path = createSvgEl("path", {
       d: pieSlice(cx, cy, radius, slice.start, slice.end),
       fill: slice.color,
+      class: "audit-slice",
+      style: "cursor:pointer; transition: opacity .15s",
     });
 
-    const title = createSvgEl("title");
-    title.textContent = `${slice.label}: ${slice.value}`;
-    path.appendChild(title);
+    const percent = Math.round((slice.value / total) * 100);
+
+    const onEnter = (event) => {
+      path.style.opacity = "0.85";
+      if (!tooltip) return;
+      tooltip.style.display = "block";
+      tooltip.style.left = `${event.clientX + 14}px`;
+      tooltip.style.top = `${event.clientY + 14}px`;
+      tooltip.innerHTML = `<b>${slice.label}</b><br>${slice.value} audits<br>${percent}% of total`;
+    };
+
+    const onMove = (event) => {
+      if (!tooltip) return;
+      tooltip.style.left = `${event.clientX + 14}px`;
+      tooltip.style.top = `${event.clientY + 14}px`;
+    };
+
+    const onLeave = () => {
+      path.style.opacity = "1";
+      if (tooltip) tooltip.style.display = "none";
+    };
+
+    path.addEventListener("mouseenter", onEnter);
+    path.addEventListener("mousemove", onMove);
+    path.addEventListener("mouseleave", onLeave);
+    handlers.push({ path, onEnter, onMove, onLeave });
+
     svg.appendChild(path);
   });
 
@@ -93,9 +138,10 @@ export function renderAuditPieChart(svg, user) {
     x: String(cx),
     y: String(cy + 4),
     "text-anchor": "middle",
-    fill: "#f2f3f5",
+    fill: palette.ink,
     "font-size": "14",
     "font-weight": "600",
+    "font-family": "Space Mono, monospace",
   });
   ratio.textContent = Number(user.auditRatio || 0).toFixed(2);
   svg.appendChild(ratio);
@@ -112,4 +158,13 @@ export function renderAuditPieChart(svg, user) {
       })),
     210
   );
+
+  svg._auditCleanup = () => {
+    handlers.forEach(({ path, onEnter, onMove, onLeave }) => {
+      path.removeEventListener("mouseenter", onEnter);
+      path.removeEventListener("mousemove", onMove);
+      path.removeEventListener("mouseleave", onLeave);
+    });
+    if (tooltip) tooltip.style.display = "none";
+  };
 }

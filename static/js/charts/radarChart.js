@@ -1,4 +1,10 @@
-import { createSvgEl, clearSvg, showEmptyChart, skillLabel } from "./utils.js";
+import {
+  createSvgEl,
+  clearSvg,
+  showEmptyChart,
+  skillLabel,
+  palette,
+} from "./utils.js";
 
 function axisPoint(cx, cy, radius, index, count) {
   const angle = (Math.PI * 2 * index) / count - Math.PI / 2;
@@ -43,7 +49,7 @@ export function renderSkillsRadarChart(svg, skills) {
       createSvgEl("polygon", {
         points,
         fill: "none",
-        stroke: "rgba(255,255,255,0.08)",
+        stroke: palette.grid,
         "stroke-width": "1",
       })
     );
@@ -57,7 +63,7 @@ export function renderSkillsRadarChart(svg, skills) {
         y1: String(cy),
         x2: String(outer.x),
         y2: String(outer.y),
-        stroke: "rgba(255,255,255,0.12)",
+        stroke: palette.grid,
       })
     );
 
@@ -65,10 +71,11 @@ export function renderSkillsRadarChart(svg, skills) {
     const label = createSvgEl("text", {
       x: String(labelPoint.x),
       y: String(labelPoint.y),
-      fill: "#949ba4",
+      fill: palette.ink,
       "font-size": "11",
       "text-anchor": "middle",
       "dominant-baseline": "middle",
+      "font-family": "IBM Plex Mono, monospace",
     });
     label.textContent = skillLabel(data[index].type);
     svg.appendChild(label);
@@ -85,8 +92,8 @@ export function renderSkillsRadarChart(svg, skills) {
   svg.appendChild(
     createSvgEl("polygon", {
       points: valuePoints,
-      fill: "rgba(104, 143, 232, 0.35)",
-      stroke: "#688fe8",
+      fill: "rgba(227, 153, 58, 0.18)",
+      stroke: palette.amber,
       "stroke-width": "2",
     })
   );
@@ -98,7 +105,7 @@ export function renderSkillsRadarChart(svg, skills) {
       cx: String(point.x),
       cy: String(point.y),
       r: "4",
-      fill: "#9271db",
+      fill: palette.amber,
     });
 
     const title = createSvgEl("title");

@@ -7,7 +7,13 @@ export const USER_ID_QUERY = `
 `;
 
 export const PROFILE_QUERY = `
-  query ProfileData($userId: Int!, $xpPath: String!, $xpExclude: String!) {
+  query ProfileData(
+    $userId: Int!
+    $xpPath: String!
+    $xpExclude: String!
+    $levelPath: String!
+    $modulePath: String!
+  ) {
     user {
       id
       login
@@ -25,9 +31,26 @@ export const PROFILE_QUERY = `
       lastName
       email
     }
+    finishedGroups: group(
+      where: {
+        status: { _eq: finished }
+        members: { userId: { _eq: $userId } }
+      }
+    ) {
+      status
+      updatedAt
+      members {
+        userId
+        userLogin
+        user {
+          login
+        }
+      }
+    }
     xpTransactions: transaction(
       where: {
         type: { _eq: "xp" }
+        userId: { _eq: $userId }
         _and: [
           { path: { _like: $xpPath } }
           { path: { _nilike: $xpExclude } }
@@ -37,6 +60,8 @@ export const PROFILE_QUERY = `
     ) {
       amount
       createdAt
+      path
+      userId
       user {
         login
       }
@@ -44,6 +69,7 @@ export const PROFILE_QUERY = `
     xpTotal: transaction_aggregate(
       where: {
         type: { _eq: "xp" }
+        userId: { _eq: $userId }
         _and: [
           { path: { _like: $xpPath } }
           { path: { _nilike: $xpExclude } }
@@ -59,6 +85,7 @@ export const PROFILE_QUERY = `
     xpUp: transaction_aggregate(
       where: {
         type: { _eq: "xp" }
+        userId: { _eq: $userId }
         amount: { _gt: 0 }
         _and: [
           { path: { _like: $xpPath } }
@@ -76,7 +103,7 @@ export const PROFILE_QUERY = `
       where: {
         type: { _eq: "level" }
         _and: [
-          { path: { _like: $xpPath } }
+          { path: { _like: $levelPath } }
           { path: { _nilike: $xpExclude } }
         ]
       }
@@ -85,6 +112,41 @@ export const PROFILE_QUERY = `
     ) {
       amount
       path
+    }
+    moduleEvent: event_user(
+      where: {
+        userId: { _eq: $userId }
+        event: {
+          _or: [
+            { path: { _eq: $modulePath } }
+            { object: { type: { _eq: "module" } } }
+          ]
+        }
+      }
+      order_by: { level: desc }
+      limit: 1
+    ) {
+      level
+      eventId
+      event {
+        id
+        path
+        object {
+          name
+          type
+          attrs
+        }
+      }
+    }
+    moduleObject: object(
+      where: {
+        type: { _eq: "module" }
+        name: { _eq: "bh-module" }
+      }
+      limit: 1
+    ) {
+      name
+      attrs
     }
     skills: transaction(
       distinct_on: type
@@ -101,6 +163,80 @@ export const PROFILE_QUERY = `
     progressDone: progress_aggregate(where: { isDone: { _eq: true } }) {
       aggregate {
         count
+      }
+    }
+    auditsUp: transaction_aggregate(
+      where: { type: { _eq: "up" }, userId: { _eq: $userId } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+    auditsDown: transaction_aggregate(
+      where: { type: { _eq: "down" }, userId: { _eq: $userId } }
+    ) {
+      aggregate {
+        count
+      }
+    }
+  }
+`;
+
+/** Peer XP via event_user nesting (broader than flat transaction perms). */
+export const XP_COMPARE_QUERY = `
+  query XpCompare(
+    $eventId: Int!
+    $xpPath: String!
+    $xpExclude: String!
+    $modulePath: String!
+  ) {
+    cohortUsers: event_user(where: { eventId: { _eq: $eventId } }) {
+      userId
+      user {
+        login
+        transactions(
+          where: {
+            type: { _eq: "xp" }
+            amount: { _gt: 0 }
+            _and: [
+              { path: { _like: $xpPath } }
+              { path: { _nilike: $xpExclude } }
+            ]
+          }
+          order_by: { createdAt: asc }
+        ) {
+          amount
+          createdAt
+        }
+      }
+    }
+    allUsers: event_user(
+      where: {
+        event: {
+          _or: [
+            { path: { _eq: $modulePath } }
+            { object: { type: { _eq: "module" }, name: { _eq: "bh-module" } } }
+          ]
+        }
+      }
+    ) {
+      userId
+      user {
+        login
+        transactions(
+          where: {
+            type: { _eq: "xp" }
+            amount: { _gt: 0 }
+            _and: [
+              { path: { _like: $xpPath } }
+              { path: { _nilike: $xpExclude } }
+            ]
+          }
+          order_by: { createdAt: asc }
+        ) {
+          amount
+          createdAt
+        }
       }
     }
   }
