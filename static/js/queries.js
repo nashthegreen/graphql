@@ -11,6 +11,7 @@ export const PROFILE_QUERY = `
     $userId: Int!
     $xpPath: String!
     $xpExclude: String!
+    $xpExcludeGo: String!
     $levelPath: String!
     $modulePath: String!
   ) {
@@ -53,6 +54,7 @@ export const PROFILE_QUERY = `
         _and: [
           { path: { _like: $xpPath } }
           { path: { _nilike: $xpExclude } }
+          { path: { _nilike: $xpExcludeGo } }
         ]
       }
       order_by: { createdAt: asc }
@@ -69,6 +71,7 @@ export const PROFILE_QUERY = `
         _and: [
           { path: { _like: $xpPath } }
           { path: { _nilike: $xpExclude } }
+          { path: { _nilike: $xpExcludeGo } }
         ]
       }
     ) {

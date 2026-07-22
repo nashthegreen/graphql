@@ -3,6 +3,7 @@ import {
   LEVEL_PATH_LIKE,
   MODULE_PATH,
   XP_PATH_EXCLUDE,
+  XP_PATH_EXCLUDE_GO,
   XP_PATH_LIKE,
 } from "./constants.js";
 import {
@@ -63,6 +64,7 @@ export async function loadProfile() {
       userId,
       xpPath: XP_PATH_LIKE,
       xpExclude: XP_PATH_EXCLUDE,
+      xpExcludeGo: XP_PATH_EXCLUDE_GO,
       levelPath: LEVEL_PATH_LIKE,
       modulePath: MODULE_PATH,
     });
