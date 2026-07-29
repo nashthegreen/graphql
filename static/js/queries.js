@@ -10,8 +10,9 @@ export const PROFILE_QUERY = `
   query ProfileData(
     $userId: Int!
     $xpPath: String!
-    $xpExclude: String!
-    $xpExcludeGo: String!
+    $xpPiscineNlike: String!
+    $xpPiscineJs: String!
+    $xpPiscineRust: String!
     $levelPath: String!
     $modulePath: String!
   ) {
@@ -51,10 +52,11 @@ export const PROFILE_QUERY = `
       where: {
         type: { _eq: "xp" }
         userId: { _eq: $userId }
-        _and: [
-          { path: { _like: $xpPath } }
-          { path: { _nilike: $xpExclude } }
-          { path: { _nilike: $xpExcludeGo } }
+        path: { _like: $xpPath }
+        _or: [
+          { path: { _nlike: $xpPiscineNlike } }
+          { path: { _eq: $xpPiscineJs } }
+          { path: { _eq: $xpPiscineRust } }
         ]
       }
       order_by: { createdAt: asc }
@@ -67,11 +69,11 @@ export const PROFILE_QUERY = `
       where: {
         type: { _eq: "xp" }
         userId: { _eq: $userId }
-        amount: { _gt: 0 }
-        _and: [
-          { path: { _like: $xpPath } }
-          { path: { _nilike: $xpExclude } }
-          { path: { _nilike: $xpExcludeGo } }
+        path: { _like: $xpPath }
+        _or: [
+          { path: { _nlike: $xpPiscineNlike } }
+          { path: { _eq: $xpPiscineJs } }
+          { path: { _eq: $xpPiscineRust } }
         ]
       }
     ) {
@@ -86,7 +88,7 @@ export const PROFILE_QUERY = `
         type: { _eq: "level" }
         _and: [
           { path: { _like: $levelPath } }
-          { path: { _nilike: $xpExclude } }
+          { path: { _nlike: $xpPiscineNlike } }
         ]
       }
       order_by: { createdAt: desc }

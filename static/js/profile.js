@@ -2,9 +2,10 @@ import { graphqlRequest, SessionExpiredError } from "./api.js";
 import {
   LEVEL_PATH_LIKE,
   MODULE_PATH,
-  XP_PATH_EXCLUDE,
-  XP_PATH_EXCLUDE_GO,
   XP_PATH_LIKE,
+  XP_PISCINE_JS_PATH,
+  XP_PISCINE_NLIKE,
+  XP_PISCINE_RUST_PATH,
 } from "./constants.js";
 import {
   renderSkillsRadarChart,
@@ -63,8 +64,9 @@ export async function loadProfile() {
     const result = await graphqlRequest(PROFILE_QUERY, {
       userId,
       xpPath: XP_PATH_LIKE,
-      xpExclude: XP_PATH_EXCLUDE,
-      xpExcludeGo: XP_PATH_EXCLUDE_GO,
+      xpPiscineNlike: XP_PISCINE_NLIKE,
+      xpPiscineJs: XP_PISCINE_JS_PATH,
+      xpPiscineRust: XP_PISCINE_RUST_PATH,
       levelPath: LEVEL_PATH_LIKE,
       modulePath: MODULE_PATH,
     });

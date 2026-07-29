@@ -5,9 +5,11 @@ export const GRAPHQL_URL =
 export const TOKEN_KEY = "graphql_profile_jwt";
 
 /** Adjust these if your campus module path differs (see GRAPHQL_DATA_GUIDE.md). */
-export const XP_PATH_LIKE = "/bahrain/bh-module/%";
-export const XP_PATH_EXCLUDE = "/bahrain/bh-module/piscine-js/%";
-export const XP_PATH_EXCLUDE_GO = "/bahrain/piscine-go/%";
+export const XP_PATH_LIKE = "%/bh-module/%";
+/** Exclude nested piscine paths, but keep piscine-js / piscine-rust module roots. */
+export const XP_PISCINE_NLIKE = "%/piscine%";
+export const XP_PISCINE_JS_PATH = "/bahrain/bh-module/piscine-js";
+export const XP_PISCINE_RUST_PATH = "/bahrain/bh-module/piscine-rust";
 /** Matches `/bahrain/bh-module` and nested paths (level txs use the root path). */
 export const LEVEL_PATH_LIKE = "/bahrain/bh-module%";
 export const MODULE_PATH = "/bahrain/bh-module";
