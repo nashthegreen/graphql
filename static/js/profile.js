@@ -11,36 +11,48 @@ import {
   renderSkillsRadarChart,
   renderTechRadarChart,
 } from "./charts/radarChart.js";
-import { profileEl } from "./dom.js";
+import { getProfileEl } from "./dom.js";
 import { USER_ID_QUERY, PROFILE_QUERY } from "./queries.js";
 import { renderDeveloperInfo } from "./render/developer.js";
-import { renderStatistics } from "./render/statistics.js";
+import {
+  cleanupStatistics,
+  renderStatistics,
+} from "./render/statistics.js";
+import { mountView } from "./router.js";
 import { appState } from "./token.js";
+import { logout } from "./auth.js";
 
 let loading = false;
+let loadGeneration = 0;
 
 function showProfileError(message) {
-  profileEl.error.textContent = message;
-  profileEl.error.classList.remove("hidden");
+  const el = getProfileEl().error;
+  if (!el) return;
+  el.textContent = message;
+  el.classList.remove("hidden");
 }
 
 function clearProfileError() {
-  profileEl.error.textContent = "";
-  profileEl.error.classList.add("hidden");
+  const el = getProfileEl().error;
+  if (!el) return;
+  el.textContent = "";
+  el.classList.add("hidden");
 }
 
 function renderProfile(data) {
-  renderDeveloperInfo(data, profileEl);
-  renderStatistics(data, profileEl);
+  const els = getProfileEl();
+  renderDeveloperInfo(data, els);
+  renderStatistics(data, els);
   const skills = data.skills || [];
-  const tip = profileEl.chartTooltip;
-  renderSkillsRadarChart(profileEl.skillsChart, skills, tip);
-  renderTechRadarChart(profileEl.techChart, skills, tip);
+  const tip = els.chartTooltip;
+  renderSkillsRadarChart(els.skillsChart, skills, tip);
+  renderTechRadarChart(els.techChart, skills, tip);
 }
 
 export async function loadProfile() {
   if (loading) return;
   loading = true;
+  const gen = ++loadGeneration;
   clearProfileError();
 
   let userId = Number(appState.userId);
@@ -48,6 +60,7 @@ export async function loadProfile() {
   try {
     if (!userId) {
       const bootstrap = await graphqlRequest(USER_ID_QUERY);
+      if (gen !== loadGeneration) return;
       if (bootstrap.errors?.length) {
         showProfileError(bootstrap.errors[0].message);
         return;
@@ -71,6 +84,8 @@ export async function loadProfile() {
       modulePath: MODULE_PATH,
     });
 
+    if (gen !== loadGeneration) return;
+
     if (result.errors?.length) {
       showProfileError(result.errors[0].message);
       return;
@@ -84,8 +99,36 @@ export async function loadProfile() {
     renderProfile(result.data);
   } catch (error) {
     if (error instanceof SessionExpiredError) return;
+    if (gen !== loadGeneration) return;
     showProfileError(error.message || "Failed to load profile data.");
   } finally {
-    loading = false;
+    if (gen === loadGeneration) loading = false;
   }
+}
+
+/**
+ * Mount the profile view, bind logout, and load data.
+ * Cleanup cancels in-flight work and tears down chart listeners.
+ */
+export function mountProfile() {
+  mountView("profile", {
+    mount() {
+      const { logoutBtn } = getProfileEl();
+      logoutBtn?.addEventListener("click", logout);
+
+      return () => {
+        loadGeneration += 1;
+        loading = false;
+        logoutBtn?.removeEventListener("click", logout);
+        cleanupStatistics();
+        const tip = document.getElementById("tm-tooltip");
+        if (tip) {
+          tip.classList.remove("visible");
+          tip.innerHTML = "";
+        }
+      };
+    },
+  });
+
+  loadProfile();
 }

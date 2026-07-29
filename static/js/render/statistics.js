@@ -51,6 +51,27 @@ function bindTreemapResize(svg) {
   }
 }
 
+/** Profile view unmounting. */
+export function cleanupStatistics() {
+  window.clearTimeout(resizeTimer);
+  resizeTimer = 0;
+
+  if (treemapObserver) {
+    treemapObserver.disconnect();
+    treemapObserver = null;
+  } else {
+    window.removeEventListener("resize", scheduleChartResize);
+  }
+
+  latestTopProjects = [];
+  treemapEls = null;
+  xpChartState = {
+    transactions: [],
+    tooltip: null,
+    svg: null,
+  };
+}
+
 export function renderStatistics(data, els) {
   const user = data.user?.[0] || {};
   // Platform totals: totalUp = given (done), totalDown = received.

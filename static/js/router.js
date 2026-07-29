@@ -1,36 +1,79 @@
 import { withBase, stripBase } from "./base.js";
 import { isAuthenticated } from "./token.js";
-import { views } from "./dom.js";
-import { loadProfile } from "./profile.js";
+import { getApp } from "./dom.js";
 
-export function showView(name) {
-  Object.values(views).forEach((view) => view?.classList.add("hidden"));
-  views[name]?.classList.remove("hidden");
+let active = null;
+
+/** @type {Record<string, () => void>} */
+const pageMounts = {};
+
+export function registerPages(handlers) {
+  Object.assign(pageMounts, handlers);
+}
+
+export function unmountView() {
+  if (!active) return;
+  try {
+    active.cleanup?.();
+  } finally {
+    getApp()?.replaceChildren();
+    active = null;
+  }
+}
+
+export function mountView(name, hooks = {}) {
+  if (active?.name === name) return false;
+
+  unmountView();
+
+  const tpl = document.getElementById(`view-${name}`);
+  const app = getApp();
+  if (!tpl || !app) {
+    console.error(`Missing template or app root for view "${name}"`);
+    return false;
+  }
+
+  app.appendChild(tpl.content.cloneNode(true));
+
+  const fromMount = hooks.mount?.();
+  const cleanup =
+    typeof fromMount === "function"
+      ? fromMount
+      : typeof hooks.unmount === "function"
+        ? hooks.unmount
+        : null;
+
+  active = { name, cleanup };
+  return true;
+}
+
+export function getActiveView() {
+  return active?.name ?? null;
 }
 
 export function resolveRoute(path = location.pathname) {
   const route = stripBase(path);
+  const authed = isAuthenticated();
 
   if (route === "/profile") {
-    if (!isAuthenticated()) {
+    if (!authed) {
       navigate("/login", { replace: true });
       return;
     }
-    showView("profile");
-    loadProfile();
+    pageMounts.profile?.();
     return;
   }
 
   if (route === "/login" || route === "/") {
-    if (isAuthenticated()) {
+    if (authed) {
       navigate("/profile", { replace: true });
       return;
     }
-    showView("login");
+    pageMounts.login?.();
     return;
   }
 
-  navigate("/login", { replace: true });
+  navigate(authed ? "/profile" : "/login", { replace: true });
 }
 
 export function navigate(path, { replace = false } = {}) {

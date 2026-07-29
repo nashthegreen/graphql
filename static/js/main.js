@@ -1,7 +1,13 @@
-import { bindAuthEvents, checkSession } from "./auth.js";
-import { resolveRoute } from "./router.js";
+import { bindAuthEvents, checkSession, mountLogin } from "./auth.js";
+import { mountProfile } from "./profile.js";
+import { registerPages, resolveRoute } from "./router.js";
 
 function initApp() {
+  registerPages({
+    login: mountLogin,
+    profile: mountProfile,
+  });
+
   bindAuthEvents();
   checkSession();
 

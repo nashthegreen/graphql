@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GraphQL — Developer Profile Sheet</title>
-    <!-- Restore path after GitHub Pages 404.html redirect (see 404.html). -->
+    <title>GraphQL — Developer Dashboard</title>
+    <!-- Restore path after GitHub Pages 404.html redirect -->
     <script>
       (function () {
         var l = window.location;
@@ -33,269 +33,278 @@
     <link rel="stylesheet" href="static/css/style.css" />
   </head>
   <body>
-    <section id="loading-view" class="view">
-      <div class="loading-spinner" aria-label="Loading" role="status"></div>
-    </section>
+    <div id="app"></div>
+    <div class="tm-tooltip" id="tm-tooltip"></div>
 
-    <section id="login-view" class="view hidden">
-      <div class="sheet auth-sheet">
-        <div class="titleblock">
-          <div>
-            <div class="eyebrow">REBOOT01</div>
-            <h1>Sign in</h1>
-          </div>
-          <div class="meta">
-            SOURCE —
-            <a
-              href="https://learn.reboot01.com/api/graphql-engine/v1/graphql"
-              target="_blank"
-              rel="noopener noreferrer"
-              ><b>GraphQL API</b></a
-            >
-          </div>
-        </div>
-        <p class="subtitle">Access your <em>01 Dashboard</em></p>
-        <form id="login-form">
-          <div class="form-group">
-            <label for="login-identifier">Username or Email</label>
-            <input
-              type="text"
-              id="login-identifier"
-              name="identifier"
-              required
-              autocomplete="username"
-            />
-          </div>
-          <div class="form-group">
-            <label for="login-password">Password</label>
-            <input
-              type="password"
-              id="login-password"
-              name="password"
-              required
-              autocomplete="current-password"
-            />
-          </div>
-          <p class="error" id="login-error"></p>
-          <button type="submit" class="btn btn-primary" id="login-submit-btn">
-            Login
-          </button>
-        </form>
-      </div>
-    </section>
+    <template id="view-loading">
+      <section class="view">
+        <div class="loading-spinner" aria-label="Loading" role="status"></div>
+      </section>
+    </template>
 
-    <section id="profile-view" class="view view-profile hidden">
-      <div class="sheet">
-        <div class="titleblock">
-          <div>
-            <a href="./" class="eyebrow brand-link" title="Refresh">REBOOT01 &gt;&gt; GRAPHQL</a>
-            <h1 id="profile-title">Welcome to your dashboard, —!</h1>
-          </div>
-          <div class="meta">
-            SOURCE —
-            <a
-              href="https://learn.reboot01.com/api/graphql-engine/v1/graphql"
-              target="_blank"
-              rel="noopener noreferrer"
-              ><b>GraphQL API</b></a
-            >
-            (JWT authenticated)<br />
-            USER — <b id="profile-login">—</b><br />
-            <button type="button" id="logout-btn" class="btn-toggle logout-btn">
-              Logout
-            </button>
-          </div>
-        </div>
-
-        <p class="error hidden" id="profile-error"></p>
-
-        <div class="layout">
-          <aside class="dev-info panel">
-            <div class="eyebrow">Developer Info</div>
-
-            <div class="dev-name" id="dev-name">—</div>
-            <div class="dev-idline">
-              @<span id="dev-login">—</span>
-              <span>·</span>
-              #<span id="dev-user-id">—</span>
+    <template id="view-login">
+      <section class="view">
+        <div class="sheet auth-sheet">
+          <div class="titleblock">
+            <div>
+              <div class="eyebrow">REBOOT01</div>
+              <h1>Sign in</h1>
             </div>
+            <div class="meta">
+              SOURCE —
+              <a
+                href="https://learn.reboot01.com/api/graphql-engine/v1/graphql"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><b>GraphQL API</b></a
+              >
+            </div>
+          </div>
+          <p class="subtitle">Access your <em>01 Dashboard</em></p>
+          <form id="login-form">
+            <div class="form-group">
+              <label for="login-identifier">Username or Email</label>
+              <input
+                type="text"
+                id="login-identifier"
+                name="identifier"
+                required
+                autocomplete="username"
+              />
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <input
+                type="password"
+                id="login-password"
+                name="password"
+                required
+                autocomplete="current-password"
+              />
+            </div>
+            <p class="error" id="login-error"></p>
+            <button type="submit" class="btn btn-primary" id="login-submit-btn">
+              Login
+            </button>
+          </form>
+        </div>
+      </section>
+    </template>
 
-            <dl class="dev-fields">
-              <dt>Gitea</dt>
-              <dd>
-                <a
-                  id="dev-gitea"
-                  class="gitea-link"
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  >—</a
-                >
-              </dd>
-              <dt>Email</dt>
-              <dd id="dev-email">—</dd>
-              <dt>Best friend</dt>
-              <dd id="dev-best-friend">—</dd>
-            </dl>
+    <template id="view-profile">
+      <section class="view view-profile">
+        <div class="sheet">
+          <div class="titleblock">
+            <div>
+              <a href="./" class="eyebrow brand-link" title="Refresh"
+                >REBOOT01 &gt;&gt; GRAPHQL</a
+              >
+              <h1 id="profile-title">Welcome to your dashboard, —!</h1>
+            </div>
+            <div class="meta">
+              SOURCE —
+              <a
+                href="https://learn.reboot01.com/api/graphql-engine/v1/graphql"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><b>GraphQL API</b></a
+              >
+              (JWT authenticated)<br />
+              USER — <b id="profile-login">—</b><br />
+              <button type="button" id="logout-btn" class="btn-toggle logout-btn">
+                Logout
+              </button>
+            </div>
+          </div>
 
-            <div class="level-block">
-              <div class="level-ring">
-                <svg width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
-                  <circle
-                    cx="39"
-                    cy="39"
-                    r="33"
-                    fill="none"
-                    stroke="var(--grid-line)"
-                    stroke-width="7"
-                  />
-                  <circle
-                    id="level-arc"
-                    cx="39"
-                    cy="39"
-                    r="33"
-                    fill="none"
-                    stroke="var(--accent-amber)"
-                    stroke-width="7"
-                    stroke-linecap="round"
-                    stroke-dasharray="207.3"
-                    stroke-dashoffset="207.3"
-                  />
-                </svg>
-                <div class="lvl-num">
-                  <b id="dev-level">—</b>
-                  <small>LEVEL</small>
+          <p class="error hidden" id="profile-error"></p>
+
+          <div class="layout">
+            <aside class="dev-info panel">
+              <div class="eyebrow">Developer Info</div>
+
+              <div class="dev-name" id="dev-name">—</div>
+              <div class="dev-idline">
+                @<span id="dev-login">—</span>
+                <span>·</span>
+                #<span id="dev-user-id">—</span>
+              </div>
+
+              <dl class="dev-fields">
+                <dt>Gitea</dt>
+                <dd>
+                  <a
+                    id="dev-gitea"
+                    class="gitea-link"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >—</a
+                  >
+                </dd>
+                <dt>Email</dt>
+                <dd id="dev-email">—</dd>
+                <dt>Best friend</dt>
+                <dd id="dev-best-friend">—</dd>
+              </dl>
+
+              <div class="level-block">
+                <div class="level-ring">
+                  <svg width="78" height="78" viewBox="0 0 78 78" aria-hidden="true">
+                    <circle
+                      cx="39"
+                      cy="39"
+                      r="33"
+                      fill="none"
+                      stroke="var(--grid-line)"
+                      stroke-width="7"
+                    />
+                    <circle
+                      id="level-arc"
+                      cx="39"
+                      cy="39"
+                      r="33"
+                      fill="none"
+                      stroke="var(--accent-amber)"
+                      stroke-width="7"
+                      stroke-linecap="round"
+                      stroke-dasharray="207.3"
+                      stroke-dashoffset="207.3"
+                    />
+                  </svg>
+                  <div class="lvl-num">
+                    <b id="dev-level">—</b>
+                    <small>LEVEL</small>
+                  </div>
+                </div>
+                <div class="rank-info">
+                  <div class="rank-name" id="dev-rank">—</div>
+                  <div class="rank-sub" id="dev-rank-sub">—</div>
                 </div>
               </div>
-              <div class="rank-info">
-                <div class="rank-name" id="dev-rank">—</div>
-                <div class="rank-sub" id="dev-rank-sub">—</div>
+
+              <div class="xp-total">
+                <span class="num" id="dev-total-xp-num">—</span
+                ><span class="unit" id="dev-total-xp-unit"></span>
+                <div class="cap">Total XP</div>
               </div>
-            </div>
 
-            <div class="xp-total">
-              <span class="num" id="dev-total-xp-num">—</span
-              ><span class="unit" id="dev-total-xp-unit"></span>
-              <div class="cap">Total XP</div>
-            </div>
+              <div class="latest-proj">
+                <div class="cap">Latest project</div>
+                <div class="name" id="dev-latest-project">—</div>
+              </div>
+            </aside>
 
-            <div class="latest-proj">
-              <div class="cap">Latest project</div>
-              <div class="name" id="dev-latest-project">—</div>
-            </div>
-          </aside>
-
-          <main>
-            <section class="block">
-              <h2>Statistics</h2>
-              <div class="stat-grid">
-                <div class="panel full">
-                  <div class="panel-head">
-                    <div class="eyebrow">Fig. 01 — XP Progression</div>
+            <main>
+              <section class="block">
+                <h2>Statistics</h2>
+                <div class="stat-grid">
+                  <div class="panel full">
+                    <div class="panel-head">
+                      <div class="eyebrow">Fig. 01 — XP Progression</div>
+                    </div>
+                    <div class="chart-wrap">
+                      <svg
+                        id="xp-line-chart"
+                        class="chart-svg"
+                        role="img"
+                        aria-label="Line chart of cumulative XP over time"
+                      ></svg>
+                    </div>
                   </div>
-                  <div class="chart-wrap">
+
+                  <div class="panel">
+                    <div class="panel-head">
+                      <div class="eyebrow">Fig. 02 — Audit Ratio</div>
+                      <span class="panel-hint">Hover for details</span>
+                    </div>
+                    <div class="stat-pills">
+                      <div class="stat-pill stat-pill-up">
+                        <span class="cap">Audits up</span>
+                        <span class="val" id="stat-audits-up">—</span>
+                      </div>
+                      <div class="stat-pill stat-pill-down">
+                        <span class="cap">Audits down</span>
+                        <span class="val" id="stat-audits-down">—</span>
+                      </div>
+                    </div>
                     <svg
-                      id="xp-line-chart"
+                      id="audit-pie-chart"
                       class="chart-svg"
                       role="img"
-                      aria-label="Line chart of cumulative XP over time"
+                      aria-label="Donut chart of audit up versus down votes with ratio in the center"
+                    ></svg>
+                  </div>
+
+                  <div class="panel">
+                    <div class="panel-head">
+                      <div class="eyebrow">Fig. 03 — Project XP Treemap</div>
+                      <span class="panel-hint">Hover for details</span>
+                    </div>
+                    <svg
+                      id="treemap"
+                      class="chart-svg chart-svg-treemap"
+                      role="img"
+                      aria-label="Treemap of project XP by relative size"
+                    ></svg>
+                    <div class="eyebrow list-subhead">Top 3 Projects by XP</div>
+                    <ul class="data-list data-list-compact" id="top-projects-list"></ul>
+                  </div>
+                </div>
+              </section>
+
+              <section class="block">
+                <h2>Projects &amp; Skills</h2>
+
+                <div class="spider-row">
+                  <div class="panel">
+                    <div class="panel-head">
+                      <div class="eyebrow">Fig. 04 — Skills</div>
+                      <span class="panel-hint">Hover for details</span>
+                    </div>
+                    <svg
+                      id="skills-radar-chart"
+                      class="chart-svg chart-svg-radar"
+                      role="img"
+                      aria-label="Radar chart of skill progression"
+                    ></svg>
+                  </div>
+                  <div class="panel">
+                    <div class="panel-head">
+                      <div class="eyebrow">Fig. 05 — Technologies</div>
+                      <span class="panel-hint">Hover for details</span>
+                    </div>
+                    <svg
+                      id="tech-radar-chart"
+                      class="chart-svg chart-svg-radar"
+                      role="img"
+                      aria-label="Radar chart of technology progression"
                     ></svg>
                   </div>
                 </div>
 
-                <div class="panel">
-                  <div class="panel-head">
-                    <div class="eyebrow">Fig. 02 — Audit Ratio</div>
-                    <span class="panel-hint">Hover for details</span>
-                  </div>
-                  <div class="stat-pills">
-                    <div class="stat-pill stat-pill-up">
-                      <span class="cap">Audits up</span>
-                      <span class="val" id="stat-audits-up">—</span>
+                <div class="lists-row">
+                  <div class="panel full-list">
+                    <div class="panel-head">
+                      <div class="eyebrow">Last 5 Projects</div>
                     </div>
-                    <div class="stat-pill stat-pill-down">
-                      <span class="cap">Audits down</span>
-                      <span class="val" id="stat-audits-down">—</span>
-                    </div>
+                    <ul class="data-list" id="recent-projects-list"></ul>
                   </div>
-                  <svg
-                    id="audit-pie-chart"
-                    class="chart-svg"
-                    role="img"
-                    aria-label="Donut chart of audit up versus down votes with ratio in the center"
-                  ></svg>
                 </div>
 
-                <div class="panel">
-                  <div class="panel-head">
-                    <div class="eyebrow">Fig. 03 — Project XP Treemap</div>
-                    <span class="panel-hint">Hover for details</span>
-                  </div>
-                  <svg
-                    id="treemap"
-                    class="chart-svg chart-svg-treemap"
-                    role="img"
-                    aria-label="Treemap of project XP by relative size"
-                  ></svg>
-                  <div class="eyebrow list-subhead">Top 3 Projects by XP</div>
-                  <ul class="data-list data-list-compact" id="top-projects-list"></ul>
-                </div>
-              </div>
-            </section>
-
-            <section class="block">
-              <h2>Projects &amp; Skills</h2>
-
-              <div class="spider-row">
-                <div class="panel">
-                  <div class="panel-head">
-                    <div class="eyebrow">Fig. 04 — Skills</div>
-                    <span class="panel-hint">Hover for details</span>
-                  </div>
-                  <svg
-                    id="skills-radar-chart"
-                    class="chart-svg chart-svg-radar"
-                    role="img"
-                    aria-label="Radar chart of skill progression"
-                  ></svg>
-                </div>
-                <div class="panel">
-                  <div class="panel-head">
-                    <div class="eyebrow">Fig. 05 — Technologies</div>
-                    <span class="panel-hint">Hover for details</span>
-                  </div>
-                  <svg
-                    id="tech-radar-chart"
-                    class="chart-svg chart-svg-radar"
-                    role="img"
-                    aria-label="Radar chart of technology progression"
-                  ></svg>
-                </div>
-              </div>
-
-              <div class="lists-row">
-                <div class="panel full-list">
-                  <div class="panel-head">
-                    <div class="eyebrow">Last 5 Projects</div>
-                  </div>
-                  <ul class="data-list" id="recent-projects-list"></ul>
-                </div>
-              </div>
-
-              <footer class="note">
-                Data loaded from GraphQL:
-                <b>user</b>, <b>transaction</b> (xp / level / skills),
-                <b>event_user</b> / <b>object</b> (module ranks),
-                <b>group</b> (best friend).
-                Charts rendered with SVG.
-              </footer>
-            </section>
-          </main>
+                <footer class="note">
+                  Data loaded from GraphQL:
+                  <b>user</b>, <b>transaction</b> (xp / level / skills),
+                  <b>event_user</b> / <b>object</b> (module ranks),
+                  <b>group</b> (best friend).
+                  Charts rendered with SVG.
+                </footer>
+              </section>
+            </main>
+          </div>
         </div>
-      </div>
-    </section>
-
-    <div class="tm-tooltip" id="tm-tooltip"></div>
+      </section>
+    </template>
 
     <script type="module" src="static/js/main.js"></script>
   </body>
